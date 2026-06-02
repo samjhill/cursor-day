@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check, Copy, ExternalLink, FolderOpen } from "lucide-react";
+import { Check, Copy, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { BuildWorkspace } from "@/lib/build-workspace";
@@ -18,8 +18,8 @@ export function BuildWorkspaceCard({ workspace }: Props) {
     return (
       <Card className="border-kitchen-border bg-kitchen-surface/50">
         <p className="text-sm text-zinc-400">
-          Roll the dice to get an isolated build folder — each project lands in
-          its own station so nothing gets overwritten.
+          Roll the dice to get a build folder — each project lands in its own
+          station so nothing gets overwritten.
         </p>
       </Card>
     );
@@ -40,16 +40,7 @@ export function BuildWorkspaceCard({ workspace }: Props) {
 
   return (
     <Card className="border-cyan-500/30 bg-cyan-950/10">
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <FolderOpen className="h-5 w-5 text-cyan-400" />
-          <div>
-            <p className="font-semibold text-cyan-200">Isolated workspace</p>
-            <p className="text-xs text-kitchen-muted">
-              Cursor should only edit files below
-            </p>
-          </div>
-        </div>
+      <div className="mb-4 flex justify-end">
         <Link href={workspace.demoPath}>
           <Button size="sm" variant="outline">
             <ExternalLink className="h-4 w-4" />

@@ -1,8 +1,16 @@
 "use client";
 
-import { Suspense, useCallback, useEffect } from "react";
+import { Suspense, useCallback, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Sparkles, RotateCcw, Soup } from "lucide-react";
+import {
+  Sparkles,
+  RotateCcw,
+  Soup,
+  ArrowLeft,
+  ArrowRight,
+  Presentation,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { IngredientPicker } from "@/components/ingredient-picker";
@@ -11,6 +19,11 @@ import {
   ChefsDiceStation,
   type RollResult,
 } from "@/components/chefs-dice-station";
+import {
+  KitchenStepNav,
+  KITCHEN_STEP_KEY,
+  type KitchenStep,
+} from "@/components/kitchen-step-nav";
 import { TRACKS, getTrackById, type TrackId } from "@/lib/tracks";
 import {
   INGREDIENTS,
@@ -36,6 +49,7 @@ function KitchenContent() {
   const trackParam = searchParams.get("track") as TrackId | null;
   const track = getTrackById(trackParam);
 
+  const [step, setStep] = useLocalStorage<KitchenStep>(KITCHEN_STEP_KEY, 0);
   const [selected, setSelected] = useLocalStorage<Ingredient[]>(
     "pk-ingredients",
     DEFAULT_INGREDIENTS
@@ -60,9 +74,18 @@ function KitchenContent() {
   );
   const [, setTrackId] = useLocalStorage<TrackId>("pk-track", "ai-tool");
 
+  const maxReached = useMemo<KitchenStep>(() => {
+    if (!workspace) return 0;
+    return 3;
+  }, [workspace]);
+
   useEffect(() => {
     if (trackParam) setTrackId(trackParam);
   }, [trackParam, setTrackId]);
+
+  useEffect(() => {
+    if (!workspace && step > 0) setStep(0);
+  }, [workspace, step, setStep]);
 
   const recipe = buildRecipeFromIngredients(
     selected,
@@ -89,8 +112,20 @@ function KitchenContent() {
         result.ingredients.map((i) => i.id)
       );
       router.replace(`/kitchen?track=${result.track.id}`);
+      setStep(1);
     },
-    [setSelected, setSpice, setTool, setWorkspace, setProjectName, setDishName, setPitch, setTrackId, router]
+    [
+      setSelected,
+      setSpice,
+      setTool,
+      setWorkspace,
+      setProjectName,
+      setDishName,
+      setPitch,
+      setTrackId,
+      router,
+      setStep,
+    ]
   );
 
   const reset = () => {
@@ -101,20 +136,36 @@ function KitchenContent() {
     setDishName(null);
     setTool(null);
     setWorkspace(null);
+    setStep(0);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("pk-simmer");
+    }
     router.replace("/kitchen");
   };
 
+  const goNext = () => {
+    if (step < 3) setStep((step + 1) as KitchenStep);
+  };
+
+  const goBack = () => {
+    if (step > 0) setStep((step - 1) as KitchenStep);
+  };
+
+  const canContinue =
+    step === 0
+      ? !!workspace
+      : step === 1
+        ? projectName.trim().length > 0
+        : true;
+
   return (
-    <div className="mx-auto max-w-6xl px-6 pb-24 pt-8">
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div className="mx-auto max-w-3xl px-6 pb-24 pt-8">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm text-kitchen-warm">
             🍳 Service starts at 12:00 · Course: {track.emoji} {track.name}
           </p>
           <h1 className="text-3xl font-bold">The Kitchen</h1>
-          <p className="mt-1 text-zinc-400">
-            Roll the dice · gather ingredients · let Cursor cook
-          </p>
         </div>
         <Button variant="ghost" size="sm" onClick={reset}>
           <RotateCcw className="h-4 w-4" />
@@ -122,155 +173,204 @@ function KitchenContent() {
         </Button>
       </div>
 
-      {/* Dice station — hero of the kitchen */}
-      <div className="mb-8">
-        <ChefsDiceStation
-          onRollComplete={handleRollComplete}
-          currentTrack={track}
-          spice={spice}
-        />
-      </div>
+      <KitchenStepNav
+        step={step}
+        maxReached={maxReached}
+        onStepClick={setStep}
+      />
 
-      <div className="mb-8">
-        <BuildWorkspaceCard workspace={workspace} />
-      </div>
-
-      <div className="mb-8">
-        <SimmerPanel
-          dishName={projectName}
-          pitch={pitch}
-          track={track}
-          ingredients={selected}
-          spice={spice}
-          tool={tool}
-        />
-      </div>
-
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div className="space-y-6">
-          <Card>
-            <label className="text-sm text-kitchen-muted">Dish name</label>
-            <input
-              type="text"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              className="mt-2 w-full rounded-lg border border-kitchen-border bg-kitchen-bg px-4 py-2.5 text-lg font-semibold outline-none focus:border-amber-500"
-              placeholder="Chef's Surprise Soufflé"
+      <div className="animate-fade-in">
+        {step === 0 && (
+          <div className="space-y-6">
+            <ChefsDiceStation
+              onRollComplete={handleRollComplete}
+              currentTrack={track}
+              spice={spice}
             />
-          </Card>
+            <p className="text-center text-sm text-zinc-500">
+              Roll to reveal today&apos;s special — then you&apos;ll gather
+              ingredients.
+            </p>
+          </div>
+        )}
 
-          <Card>
-            <label className="text-sm text-kitchen-muted">
-              Ticket description (your show & tell pitch)
-            </label>
-            <textarea
-              value={pitch}
-              onChange={(e) => setPitch(e.target.value)}
-              rows={2}
-              className="mt-2 w-full resize-none rounded-lg border border-kitchen-border bg-kitchen-bg px-4 py-2.5 outline-none focus:border-amber-500"
-            />
-          </Card>
-
-          {tool && (
-            <Card className="border-emerald-500/40 bg-emerald-500/5">
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">{tool.emoji}</span>
-                <div>
-                  <p className="font-semibold text-emerald-300">
-                    Build: {tool.name}
-                  </p>
-                  <p className="mt-1 text-sm text-zinc-300">{tool.description}</p>
-                  <p className="mt-2 text-xs text-emerald-400/80">
-                    Demo: {tool.demoHook}
-                  </p>
+        {step === 1 && workspace && (
+          <div className="space-y-6">
+            {tool && (
+              <Card className="border-emerald-500/40 bg-emerald-500/5">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">{tool.emoji}</span>
+                  <div>
+                    <p className="font-semibold text-emerald-300">
+                      Build: {tool.name}
+                    </p>
+                    <p className="mt-1 text-sm text-zinc-300">
+                      {tool.description}
+                    </p>
+                    <p className="mt-2 text-xs text-emerald-400/80">
+                      Demo: {tool.demoHook}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          )}
+              </Card>
+            )}
 
-          {spice && (
-            <Card className="border-orange-500/40 bg-orange-500/5">
+            {spice && (
+              <Card className="border-orange-500/40 bg-orange-500/5">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">{spice.emoji}</span>
+                  <div>
+                    <p className="font-semibold text-orange-300">
+                      Wild Spice: {spice.name}
+                    </p>
+                    <p className="mt-1 text-sm text-zinc-400">
+                      {spice.constraint}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            <BuildWorkspaceCard workspace={workspace} />
+
+            <Card>
+              <label className="text-sm text-kitchen-muted">Dish name</label>
+              <input
+                type="text"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                className="mt-2 w-full rounded-lg border border-kitchen-border bg-kitchen-bg px-4 py-2.5 text-lg font-semibold outline-none focus:border-amber-500"
+                placeholder="Chef's Surprise Soufflé"
+              />
+            </Card>
+
+            <Card>
+              <label className="text-sm text-kitchen-muted">
+                Ticket description (your show & tell pitch)
+              </label>
+              <textarea
+                value={pitch}
+                onChange={(e) => setPitch(e.target.value)}
+                rows={2}
+                className="mt-2 w-full resize-none rounded-lg border border-kitchen-border bg-kitchen-bg px-4 py-2.5 outline-none focus:border-amber-500"
+              />
+            </Card>
+
+            <Card>
+              <h2 className="mb-1 flex items-center gap-2 font-semibold">
+                <Soup className="h-4 w-4 text-kitchen-warm" />
+                Ingredient Board
+              </h2>
+              <p className="mb-4 text-xs text-kitchen-muted">
+                Tap to add or remove · dice picks the starting set
+              </p>
+              <IngredientPicker
+                ingredients={INGREDIENTS}
+                selected={selected}
+                onToggle={(ingredient) => {
+                  setSelected((prev) => {
+                    const exists = prev.find((i) => i.id === ingredient.id);
+                    if (exists)
+                      return prev.filter((i) => i.id !== ingredient.id);
+                    return [...prev, ingredient];
+                  });
+                }}
+              />
+            </Card>
+
+            <details className="rounded-xl border border-kitchen-border bg-kitchen-surface/30 px-4 py-3">
+              <summary className="cursor-pointer text-sm text-kitchen-muted">
+                Switch course manually
+              </summary>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {TRACKS.map((t) => (
+                  <a
+                    key={t.id}
+                    href={`/kitchen?track=${t.id}`}
+                    className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+                      t.id === track.id
+                        ? "border-amber-500 bg-amber-500/10 text-amber-300"
+                        : "border-kitchen-border text-zinc-400 hover:border-zinc-600"
+                    }`}
+                  >
+                    {t.emoji} {t.name}
+                  </a>
+                ))}
+              </div>
+            </details>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="space-y-4">
+            <p className="text-sm text-zinc-400">
+              Turn your recipe into a build plan — features, files, and a demo
+              script.
+            </p>
+            <SimmerPanel
+              dishName={projectName}
+              pitch={pitch}
+              track={track}
+              ingredients={selected}
+              spice={spice}
+              tool={tool}
+            />
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="space-y-6">
+            <Card className="border-violet-500/30 bg-violet-500/5">
               <div className="flex items-start gap-3">
-                <span className="text-2xl">{spice.emoji}</span>
+                <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-violet-400" />
                 <div>
-                  <p className="font-semibold text-orange-300">
-                    Wild Spice: {spice.name}
+                  <p className="font-medium text-violet-300">
+                    Recipe ticket ready
                   </p>
                   <p className="mt-1 text-sm text-zinc-400">
-                    {spice.constraint}
+                    Open in Cursor, review the prompt, and send in Agent.
                   </p>
                 </div>
               </div>
             </Card>
-          )}
-
-          <Card>
-            <h2 className="mb-1 flex items-center gap-2 font-semibold">
-              <Soup className="h-4 w-4 text-kitchen-warm" />
-              Ingredient Board
-            </h2>
-            <p className="mb-4 text-xs text-kitchen-muted">
-              Tap to add or remove · or let the dice decide
-            </p>
-            <IngredientPicker
-              ingredients={INGREDIENTS}
-              selected={selected}
-              onToggle={(ingredient) => {
-                setSelected((prev) => {
-                  const exists = prev.find((i) => i.id === ingredient.id);
-                  if (exists)
-                    return prev.filter((i) => i.id !== ingredient.id);
-                  return [...prev, ingredient];
-                });
-              }}
+            <RecipePreview
+              recipe={recipe}
+              projectName={projectName}
+              pitch={pitch}
+              track={track}
+              spice={spice}
+              tool={tool}
+              workspace={workspace}
             />
-          </Card>
-
-          <Card className="border-violet-500/30 bg-violet-500/5">
-            <div className="flex items-start gap-3">
-              <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-violet-400" />
-              <div>
-                <p className="font-medium text-violet-300">Recipe Card Ready</p>
-                <p className="mt-1 text-sm text-zinc-400">
-                  Open in Cursor from the recipe ticket — review and send in
-                  Agent.
-                </p>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        <RecipePreview
-          recipe={recipe}
-          projectName={projectName}
-          pitch={pitch}
-          track={track}
-          spice={spice}
-          tool={tool}
-          workspace={workspace}
-        />
+          </div>
+        )}
       </div>
 
-      <section className="mt-12">
-        <h2 className="mb-4 text-sm font-medium text-kitchen-muted">
-          Switch course manually
-        </h2>
-        <div className="flex flex-wrap gap-2">
-          {TRACKS.map((t) => (
-            <a
-              key={t.id}
-              href={`/kitchen?track=${t.id}`}
-              className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
-                t.id === track.id
-                  ? "border-amber-500 bg-amber-500/10 text-amber-300"
-                  : "border-kitchen-border text-zinc-400 hover:border-zinc-600"
-              }`}
-            >
-              {t.emoji} {t.name}
-            </a>
-          ))}
-        </div>
-      </section>
+      <div className="mt-10 flex items-center justify-between gap-4 border-t border-kitchen-border pt-6">
+        <Button
+          variant="ghost"
+          onClick={goBack}
+          disabled={step === 0}
+          className={step === 0 ? "invisible" : ""}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button>
+
+        {step < 3 ? (
+          <Button onClick={goNext} disabled={!canContinue}>
+            Continue
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Link href="/present">
+            <Button className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500">
+              <Presentation className="h-4 w-4" />
+              Go to Show & Tell
+            </Button>
+          </Link>
+        )}
+      </div>
     </div>
   );
 }

@@ -4,16 +4,13 @@ import Link from "next/link";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Experience } from "@/components/experience";
+import { CoffeeVsCommitsDashboard } from "@/components/dashboard";
 import { useLocalStorage } from "@/lib/hooks";
 import { DEMO_SCRIPT } from "@/lib/demo-script";
 import { WORKSPACE_KEY, type BuildWorkspace } from "@/lib/build-workspace";
 
 export default function PresentPage() {
-  const [projectName] = useLocalStorage(
-    "pk-project-name",
-    "Prompt Slot Machine"
-  );
+  const [projectName] = useLocalStorage("pk-project-name", "Coffee vs Commits");
   const [workspace] = useLocalStorage<BuildWorkspace | null>(
     WORKSPACE_KEY,
     null
@@ -31,8 +28,8 @@ export default function PresentPage() {
               Back to Kitchen
             </Button>
           </Link>
-          <span className="rounded-full bg-violet-500/20 px-3 py-1 text-xs font-medium text-violet-300">
-            🎰 INTERACTIVE · PASS
+          <span className="rounded-full bg-amber-500/20 px-3 py-1 text-xs font-medium text-amber-300">
+            📊 VISUAL DASHBOARD · LIVE
           </span>
         </div>
 
@@ -42,15 +39,14 @@ export default function PresentPage() {
             {projectName}
           </h1>
           <p className="mx-auto max-w-2xl text-xl text-zinc-400">
-            Three reels. One lever. Zero analysis paralysis.
+            The chart proves it: more coffee, more commits. (Do not question the
+            methodology.)
           </p>
         </div>
 
         {workspace && (
           <Card className="mb-8 border-cyan-500/30 bg-cyan-950/10">
-            <p className="text-sm text-cyan-300">
-              Your rolled build lives in an isolated workspace — demo it here:
-            </p>
+            <p className="text-sm text-cyan-300">Isolated build workspace:</p>
             <Link href={workspace.demoPath} className="mt-3 inline-block">
               <Button size="lg" className="w-full sm:w-auto">
                 <ExternalLink className="h-4 w-4" />
@@ -64,7 +60,7 @@ export default function PresentPage() {
         )}
 
         <div className="mb-12">
-          <Experience />
+          <CoffeeVsCommitsDashboard />
         </div>
 
         <Card>
@@ -72,7 +68,7 @@ export default function PresentPage() {
           <ol className="space-y-3 text-sm text-zinc-300">
             {DEMO_SCRIPT.map((step, i) => (
               <li key={i} className="flex gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-xs font-bold text-violet-400">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-xs font-bold text-amber-400">
                   {i + 1}
                 </span>
                 {step}
@@ -89,7 +85,7 @@ export default function PresentPage() {
                 href={appUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-violet-400 hover:underline"
+                className="text-amber-400 hover:underline"
               >
                 {appUrl}
                 <ExternalLink className="ml-1 inline h-3 w-3" />
@@ -98,8 +94,8 @@ export default function PresentPage() {
           ) : (
             <>
               Deploy with{" "}
-              <code className="text-violet-400">npx vercel</code> and set{" "}
-              <code className="text-violet-400">NEXT_PUBLIC_APP_URL</code> in
+              <code className="text-amber-400">npx vercel</code> and set{" "}
+              <code className="text-amber-400">NEXT_PUBLIC_APP_URL</code> in
               .env.local
             </>
           )}

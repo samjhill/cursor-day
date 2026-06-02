@@ -85,7 +85,7 @@ export function RecipePreview({
           )}
           {workspace && (
             <>
-              <p className="mt-3 text-kitchen-muted">Workspace</p>
+              <p className="mt-3 text-kitchen-muted">Build</p>
               <p className="font-mono text-xs text-cyan-300">{workspace.slug}</p>
               <p className="mt-1 font-mono text-xs text-cyan-400/80">
                 {workspace.demoPath}

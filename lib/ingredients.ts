@@ -149,7 +149,7 @@ ${fileHints.map((f) => `- ${f}`).join("\n")}
 - [ ] Deployed to Vercel (optional but impressive)`;
 
   const checklist = [
-    "Roll the dice → get isolated workspace folder",
+    "Roll the dice → get your build folder",
     "Open in Cursor via deeplink on /kitchen",
     `Build ONLY in ${workspace?.projectsDir ?? "your workspace"}`,
     "Do NOT run npm run dev — refresh browser at demo route instead",
