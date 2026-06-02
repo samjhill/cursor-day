@@ -87,7 +87,7 @@ export function BuildWorkspaceCard({ workspace }: Props) {
         <Link href={workspace.demoPath} className="underline hover:text-cyan-300">
           {workspace.demoPath}
         </Link>{" "}
-        — previous rolls keep their own folders under <code>app/build/</code>
+        — refresh browser; don&apos;t restart <code>npm run dev</code>
       </p>
     </Card>
   );

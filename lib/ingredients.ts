@@ -6,6 +6,7 @@ import {
   workspacePromptBlock,
   workspaceFileHints,
 } from "./build-workspace";
+import { devGuardrailsForDemo } from "./dev-guardrails";
 
 export interface Ingredient {
   id: string;
@@ -51,7 +52,7 @@ export const INGREDIENTS: Ingredient[] = [
     emoji: "🔗",
     name: "Shareable URL",
     category: "garnish",
-    promptFragment: "Deploy to Vercel. Show live URL at demo.",
+    promptFragment: "Deploy to Vercel at the end only (user runs it — Agent must not). Show live URL at demo.",
   },
   {
     id: "cursor-meta",
@@ -108,6 +109,9 @@ export function buildRecipeFromIngredients(
 - Implementation brief: ${tool.buildBrief}`
     : "";
   const workspaceBlock = workspace ? `\n${workspacePromptBlock(workspace)}` : "";
+  const devBlock = workspace
+    ? `\n${devGuardrailsForDemo(workspace.demoPath)}`
+    : "";
   const fileHints = workspace
     ? workspaceFileHints(workspace)
     : track.fileHints;
@@ -122,7 +126,7 @@ ${workspace ? `Workspace slug: ${workspace.slug}` : ""}
 Event: NYC Cook with Cursor Day — 2.5 hour build window.
 
 ## Track starter
-${track.starterPrompt}${toolBlock}${workspaceBlock}
+${track.starterPrompt}${toolBlock}${workspaceBlock}${devBlock}
 
 ## Ingredients (requirements)
 ${fragments}${spiceBlock}
@@ -130,6 +134,7 @@ ${fragments}${spiceBlock}
 ## Constraints
 - Ship something demo-able in under 2 hours
 - Demo lives at ${workspace?.demoPath ?? "/build/{slug}"} — NOT in shared kitchen pages
+- **Never start, stop, or duplicate the dev server** (see Dev server section above)
 - Keep scope narrow — one killer feature beats five half-done ones
 - Match existing dark theme and component style in components/ui/
 - Do NOT add auth, databases, or payment unless it's the core demo
@@ -147,6 +152,7 @@ ${fileHints.map((f) => `- ${f}`).join("\n")}
     "Roll the dice → get isolated workspace folder",
     "Open in Cursor via deeplink on /kitchen",
     `Build ONLY in ${workspace?.projectsDir ?? "your workspace"}`,
+    "Do NOT run npm run dev — refresh browser at demo route instead",
     `Demo at ${workspace?.demoPath ?? "/build/{slug}"}`,
     "Practice 30-sec demo twice",
     "Deploy & get shareable URL",

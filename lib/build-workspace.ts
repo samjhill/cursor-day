@@ -45,6 +45,7 @@ Each roll gets its own folder. This build's slug: \`${ws.slug}\`
 
 **DO NOT modify:**
 - \`app/kitchen/\`, \`app/present/\`, \`app/page.tsx\`, \`components/experience.tsx\`
+- \`next.config.ts\`, \`package.json\`, \`.github/\` — breaks the running dev server
 - Other \`app/build/*\` folders from previous rolls
 - Shared \`components/ui/\` unless adding a generic primitive
 

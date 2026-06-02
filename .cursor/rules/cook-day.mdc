@@ -10,13 +10,20 @@ alwaysApply: true
 - Event: NYC Cook with Cursor, June 2 2026, 9 AM–12:30 PM ET
 - Build window: ~2.5 hours (9:45 AM – 12:00 PM show & tell)
 - Goal: One demo-able feature that wins show & tell
+- **Dev server is already running** at http://localhost:3000 — never restart it
 
 ## Build Principles
 1. **Scope ruthlessly** — one killer interaction beats a half-built app
 2. **Demo-first** — every change should be visible at `/build/{slug}` within 30 seconds
 3. **Isolated workspace** — each roll gets its own folder; never overwrite other builds
-4. **Match the scaffold** — dark theme, violet/amber accent, existing `components/ui/`
+4. **No server churn** — do not run `npm run dev`, `npm run build`, or touch `next.config.ts`
 5. **Ship by 11:30** — last 30 min is polish, deploy, and practice demo
+
+## Dev server (never break localhost)
+- User runs `npm run dev` once — Agent edits files only
+- User **refreshes the browser** at `/build/{slug}` to see changes (hot reload)
+- **Never:** start/stop servers, `pkill` port 3000, `rm -rf .next`, modify `next.config.ts` or `package.json`
+- Deploy (`npx vercel`) is for the user at the end — not mid-build
 
 ## File Conventions (per roll)
 Each dice roll generates a unique slug (e.g. `commit-msg-chef-x7k2`). **Only edit:**
@@ -27,14 +34,16 @@ Each dice roll generates a unique slug (e.g. `commit-msg-chef-x7k2`). **Only edi
 
 **Never modify** on a rolled build:
 - `app/kitchen/`, `app/present/`, `app/page.tsx`
+- `next.config.ts`, `package.json`, `.github/workflows/`
 - Other `app/build/*` folders from previous rolls
 - Shared infrastructure like `components/experience.tsx`
 
 ## When Using Agent (⌘I)
 - Start from the recipe deeplink on `/kitchen` — it includes the workspace slug
 - Ask for incremental commits: "build X in projects/{slug}/ only, then stop"
+- Tell user to refresh browser — do not run terminal dev commands
 - If stuck >10 min, pivot track or simplify
 
 ## Deploy
-- `npx vercel` before 11:45 for a shareable URL
+- User runs `npx vercel` before 11:45 — Agent does not deploy
 - Demo route: `/build/{slug}`

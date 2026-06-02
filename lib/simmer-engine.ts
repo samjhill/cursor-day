@@ -1,6 +1,7 @@
 import type { CookIngredient, CookSpice, SimmerResponse, PlateResponse } from "./cook-types";
 import type { TrackId } from "./tracks";
 import { getTrackById } from "./tracks";
+import { DEV_SERVER_GUARDRAILS } from "./dev-guardrails";
 
 const FEATURE_TEMPLATES: Record<TrackId, string[]> = {
   "ai-tool": [
@@ -57,7 +58,7 @@ export function mockSimmer(
   const features = toolBrief
     ? [
         toolBrief,
-        `Ship "${toolName ?? dishName}" as the core demo on /present`,
+        `Ship "${toolName ?? dishName}" as the core demo at /build/{slug}`,
         "One input → one output (or one interaction loop)",
         ingredientHint(ingredients),
       ]
@@ -157,6 +158,8 @@ export function buildSimmerPrompt(
   return `You are a hackathon chef at "Cook with Cursor" NYC. A builder rolled dice and got this recipe. Respond ONLY with valid JSON, no markdown fences:
 {"features":["...","...","..."],"files":["...","...","..."],"demoScript":"one sentence","chefNote":"one witty sentence"}
 
+${DEV_SERVER_GUARDRAILS}
+
 Dish: ${dishName}
 Pitch: ${pitch}
 Course/Track: ${track.name}
@@ -183,6 +186,8 @@ export function buildPlatePrompt(
 
   return `You are a executive chef translating a hackathon idea into a build plan. Respond ONLY with valid JSON, no markdown fences:
 {"output":"markdown string with sections: idea summary, 3 build steps, demo tip","garnish":"one short witty kitchen pun"}
+
+${DEV_SERVER_GUARDRAILS}
 
 Dish name: ${dishName}
 Track: ${track.name}
