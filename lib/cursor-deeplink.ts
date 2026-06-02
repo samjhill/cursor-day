@@ -86,3 +86,18 @@ export function buildCursorPromptLinks(prompt: string): CursorPromptLinks {
     truncated,
   };
 }
+
+/** Open a cursor:// or https:// cursor deeplink without leaving the kitchen page. */
+export function openCursorDeeplink(url: string, preferNewTab = false) {
+  if (preferNewTab) {
+    window.open(url, "_blank", "noopener,noreferrer");
+    return;
+  }
+
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.style.display = "none";
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+}

@@ -1,15 +1,18 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ExternalLink, CheckCircle2, ClipboardList, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CursorBuildLoading } from "@/components/cursor-build-loading";
 import type { Recipe } from "@/lib/ingredients";
 import type { Track } from "@/lib/tracks";
 import type { Spice } from "@/lib/spices";
 import type { ToolIdea } from "@/lib/tool-ideas";
 import type { BuildWorkspace } from "@/lib/build-workspace";
-import { buildCursorPromptLinks } from "@/lib/cursor-deeplink";
+import { buildCursorPromptLinks, openCursorDeeplink } from "@/lib/cursor-deeplink";
+import { useBuildReadyPoll } from "@/lib/use-build-ready-poll";
 
 interface Props {
   recipe: Recipe;
@@ -30,11 +33,13 @@ export function RecipePreview({
   tool,
   workspace,
 }: Props) {
+  const router = useRouter();
   const links = useMemo(
     () => buildCursorPromptLinks(recipe.prompt),
     [recipe.prompt]
   );
   const [copied, setCopied] = useState(false);
+  const [waitingForBuild, setWaitingForBuild] = useState(false);
 
   const copyFullPrompt = useCallback(async () => {
     try {
@@ -46,112 +51,168 @@ export function RecipePreview({
     }
   }, [recipe.prompt]);
 
+  const handleBuildReady = useCallback(
+    (demoPath: string) => {
+      setWaitingForBuild(false);
+      router.push(demoPath);
+    },
+    [router]
+  );
+
+  useBuildReadyPoll({
+    slug: workspace?.slug ?? null,
+    enabled: waitingForBuild,
+    onReady: handleBuildReady,
+  });
+
+  const openInCursor = useCallback(async () => {
+    if (!workspace) return;
+
+    const openLink = () => {
+      if (links.urlTooLong) {
+        openCursorDeeplink(links.webUrl, true);
+      } else {
+        openCursorDeeplink(links.appUrl);
+      }
+    };
+
+    try {
+      const res = await fetch(`/api/build/${encodeURIComponent(workspace.slug)}/status`);
+      if (res.ok) {
+        const data = (await res.json()) as { ready?: boolean; demoPath?: string };
+        if (data.ready && data.demoPath) {
+          openLink();
+          router.push(data.demoPath);
+          return;
+        }
+      }
+    } catch {
+      /* fall through to loading flow */
+    }
+
+    setWaitingForBuild(true);
+    openLink();
+  }, [workspace, links, router]);
+
+  const cancelWaiting = useCallback(() => {
+    setWaitingForBuild(false);
+  }, []);
+
   return (
-    <div className="space-y-6">
-      <Card className="sticky top-24 border-amber-500/20 kitchen-glow">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 font-semibold">
-            <ClipboardList className="h-4 w-4 text-kitchen-warm" />
-            Recipe Ticket
-          </h2>
-          <div className="flex flex-wrap items-center gap-2">
-            {!links.urlTooLong ? (
-              <a href={links.appUrl}>
-                <Button size="sm">Open in Cursor</Button>
+    <>
+      {waitingForBuild && workspace && (
+        <CursorBuildLoading
+          slug={workspace.slug}
+          demoPath={workspace.demoPath}
+          projectName={projectName}
+          onCancel={cancelWaiting}
+        />
+      )}
+
+      <div className="space-y-6">
+        <Card className="sticky top-24 border-amber-500/20 kitchen-glow">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="flex items-center gap-2 font-semibold">
+              <ClipboardList className="h-4 w-4 text-kitchen-warm" />
+              Recipe Ticket
+            </h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                size="sm"
+                onClick={openInCursor}
+                disabled={!workspace || waitingForBuild}
+              >
+                Open in Cursor
+              </Button>
+              <Button type="button" size="sm" variant="outline" onClick={copyFullPrompt}>
+                {copied ? (
+                  <>
+                    <Check className="h-3.5 w-3.5" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3.5 w-3.5" />
+                    Copy prompt
+                  </>
+                )}
+              </Button>
+              <a
+                href={links.webUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs text-kitchen-muted hover:text-zinc-300"
+              >
+                <ExternalLink className="h-3 w-3" />
+                Browser link
               </a>
-            ) : (
-              <a href={links.webUrl} target="_blank" rel="noopener noreferrer">
-                <Button size="sm">Open in Cursor</Button>
-              </a>
+            </div>
+          </div>
+
+          {links.truncated && (
+            <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200/90">
+              Deeplink hit Cursor&apos;s 8k URL limit — tail trimmed. Use{" "}
+              <strong>Copy prompt</strong> for the full text if anything is missing.
+            </div>
+          )}
+
+          <div className="mb-4 rounded-lg border border-dashed border-amber-500/30 bg-kitchen-bg p-4 text-sm">
+            <p className="text-kitchen-muted">Dish</p>
+            <p className="font-medium">{projectName}</p>
+            {tool && (
+              <>
+                <p className="mt-3 text-kitchen-muted">Tool</p>
+                <p className="text-emerald-300">
+                  {tool.emoji} {tool.name}
+                </p>
+              </>
             )}
-            <Button type="button" size="sm" variant="outline" onClick={copyFullPrompt}>
-              {copied ? (
-                <>
-                  <Check className="h-3.5 w-3.5" />
-                  Copied
-                </>
-              ) : (
-                <>
-                  <Copy className="h-3.5 w-3.5" />
-                  Copy prompt
-                </>
-              )}
-            </Button>
-            <a
-              href={links.webUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-kitchen-muted hover:text-zinc-300"
-            >
-              <ExternalLink className="h-3 w-3" />
-              Browser link
-            </a>
+            {workspace && (
+              <>
+                <p className="mt-3 text-kitchen-muted">Build</p>
+                <p className="font-mono text-xs text-cyan-300">{workspace.slug}</p>
+                <p className="mt-1 font-mono text-xs text-cyan-400/80">
+                  {workspace.demoPath}
+                </p>
+              </>
+            )}
+            <p className="mt-3 text-kitchen-muted">Ticket</p>
+            <p className="text-zinc-300">{pitch}</p>
+            <p className="mt-3 text-kitchen-muted">Course</p>
+            <p>
+              {track.emoji} {track.name}
+            </p>
+            {spice && (
+              <>
+                <p className="mt-3 text-kitchen-muted">Wild Spice</p>
+                <p className="text-orange-300">
+                  {spice.emoji} {spice.name}
+                </p>
+              </>
+            )}
           </div>
-        </div>
 
-        {links.truncated && (
-          <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200/90">
-            Deeplink hit Cursor&apos;s 8k URL limit — tail trimmed. Use{" "}
-            <strong>Copy prompt</strong> for the full text if anything is missing.
-          </div>
-        )}
+          <pre className="max-h-[360px] overflow-auto rounded-lg bg-black/50 p-4 font-mono text-xs leading-relaxed text-zinc-400">
+            {recipe.prompt}
+          </pre>
+        </Card>
 
-        <div className="mb-4 rounded-lg border border-dashed border-amber-500/30 bg-kitchen-bg p-4 text-sm">
-          <p className="text-kitchen-muted">Dish</p>
-          <p className="font-medium">{projectName}</p>
-          {tool && (
-            <>
-              <p className="mt-3 text-kitchen-muted">Tool</p>
-              <p className="text-emerald-300">
-                {tool.emoji} {tool.name}
-              </p>
-            </>
-          )}
-          {workspace && (
-            <>
-              <p className="mt-3 text-kitchen-muted">Build</p>
-              <p className="font-mono text-xs text-cyan-300">{workspace.slug}</p>
-              <p className="mt-1 font-mono text-xs text-cyan-400/80">
-                {workspace.demoPath}
-              </p>
-            </>
-          )}
-          <p className="mt-3 text-kitchen-muted">Ticket</p>
-          <p className="text-zinc-300">{pitch}</p>
-          <p className="mt-3 text-kitchen-muted">Course</p>
-          <p>
-            {track.emoji} {track.name}
-          </p>
-          {spice && (
-            <>
-              <p className="mt-3 text-kitchen-muted">Wild Spice</p>
-              <p className="text-orange-300">
-                {spice.emoji} {spice.name}
-              </p>
-            </>
-          )}
-        </div>
-
-        <pre className="max-h-[360px] overflow-auto rounded-lg bg-black/50 p-4 font-mono text-xs leading-relaxed text-zinc-400">
-          {recipe.prompt}
-        </pre>
-      </Card>
-
-      <Card>
-        <h3 className="mb-4 flex items-center gap-2 font-semibold">
-          <CheckCircle2 className="h-4 w-4 text-kitchen-success" />
-          Line Cook Checklist
-        </h3>
-        <ul className="space-y-2">
-          {recipe.checklist.map((item, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-zinc-400">
-              <span className="mt-0.5 text-kitchen-muted">□</span>
-              {item}
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 text-xs text-kitchen-muted">{recipe.timeBudget}</p>
-      </Card>
-    </div>
+        <Card>
+          <h3 className="mb-4 flex items-center gap-2 font-semibold">
+            <CheckCircle2 className="h-4 w-4 text-kitchen-success" />
+            Line Cook Checklist
+          </h3>
+          <ul className="space-y-2">
+            {recipe.checklist.map((item, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-zinc-400">
+                <span className="mt-0.5 text-kitchen-muted">□</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-xs text-kitchen-muted">{recipe.timeBudget}</p>
+        </Card>
+      </div>
+    </>
   );
 }
