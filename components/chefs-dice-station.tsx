@@ -84,6 +84,9 @@ export function ChefsDiceStation({ onRollComplete, currentTrack, spice }: Props)
             <p className="text-sm italic text-amber-200/90">
               &ldquo;{lastRoll.chefQuote}&rdquo;
             </p>
+            <p className="font-mono text-xs text-cyan-400/90">
+              Station: {lastRoll.workspace.slug} → {lastRoll.workspace.demoPath}
+            </p>
             <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3">
               <p className="text-xs font-medium uppercase tracking-wider text-emerald-400">
                 Build this

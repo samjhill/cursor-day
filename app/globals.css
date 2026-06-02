@@ -100,3 +100,39 @@
 .steam-2 { left: 25%; animation-delay: 1s; width: 6px; height: 6px; }
 .steam-3 { left: 20%; animation-delay: 2s; width: 10px; height: 10px; }
 
+/* Slot machine */
+@keyframes lever-pull {
+  0% { transform: rotate(0deg) translateY(0); }
+  40% { transform: rotate(12deg) translateY(8px); }
+  100% { transform: rotate(0deg) translateY(0); }
+}
+
+@keyframes slot-win-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.3); }
+  50% { box-shadow: 0 0 24px 4px rgba(124, 58, 237, 0.25); }
+}
+
+.slot-lever-pulled {
+  animation: lever-pull 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.slot-window {
+  height: 72px;
+}
+
+.slot-reel {
+  will-change: transform;
+}
+
+.slot-reel-landed .slot-item:last-child {
+  color: rgb(196 181 253);
+}
+
+.slot-win-pulse {
+  animation: slot-win-pulse 1.2s ease-in-out 2;
+}
+
+.slot-item {
+  user-select: none;
+}
+

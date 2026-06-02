@@ -3,10 +3,12 @@ import { INGREDIENTS } from "./ingredients";
 import { SPICES, type Spice, randomChefQuote } from "./spices";
 import { pickToolForTrack, type ToolIdea } from "./tool-ideas";
 import { TRACKS, type Track, type TrackId } from "./tracks";
+import { createBuildWorkspace, type BuildWorkspace } from "./build-workspace";
 
 export interface RollResult {
   track: Track;
   tool: ToolIdea;
+  workspace: BuildWorkspace;
   ingredients: Ingredient[];
   spice: Spice;
   dishName: string;
@@ -64,10 +66,12 @@ export function rollKitchen(): RollResult {
   }
 
   const pitch = `${tool.tagline} ${tool.demoHook}`;
+  const workspace = createBuildWorkspace(tool);
 
   return {
     track,
     tool,
+    workspace,
     ingredients: picked,
     spice,
     dishName: tool.name,

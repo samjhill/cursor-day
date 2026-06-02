@@ -24,7 +24,9 @@ Open [http://localhost:3000](http://localhost:3000)
 | Path | Purpose |
 |------|---------|
 | `/` | Landing + track picker + event timeline |
-| `/kitchen` | Dice roll, simmer, ingredients → Cursor deeplink |
+| `/kitchen` | Dice roll, simmer, ingredients → Cursor deeplink + **isolated workspace** |
+| `/build/{slug}` | Per-roll demo route (Cursor builds here) |
+| `projects/{slug}/` | Tool components — won't overwrite other rolls |
 | `/present` | Show & tell mode + track-specific widgets |
 | `app/api/cook/route.ts` | Simmer/plate API (local dev; client mock on Pages) |
 | `BUILD.md` | Hour-by-hour plan for the event |

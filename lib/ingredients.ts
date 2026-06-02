@@ -1,6 +1,11 @@
 import type { Track } from "./tracks";
 import type { Spice } from "./spices";
 import type { ToolIdea } from "./tool-ideas";
+import type { BuildWorkspace } from "./build-workspace";
+import {
+  workspacePromptBlock,
+  workspaceFileHints,
+} from "./build-workspace";
 
 export interface Ingredient {
   id: string;
@@ -89,7 +94,8 @@ export function buildRecipeFromIngredients(
   track: Track,
   spice?: Spice | null,
   dishName?: string,
-  tool?: ToolIdea | null
+  tool?: ToolIdea | null,
+  workspace?: BuildWorkspace | null
 ): Recipe {
   const fragments = selected.map((i) => `- ${i.promptFragment}`).join("\n");
   const spiceBlock = spice
@@ -101,6 +107,10 @@ export function buildRecipeFromIngredients(
 - Demo hook: ${tool.demoHook}
 - Implementation brief: ${tool.buildBrief}`
     : "";
+  const workspaceBlock = workspace ? `\n${workspacePromptBlock(workspace)}` : "";
+  const fileHints = workspace
+    ? workspaceFileHints(workspace)
+    : track.fileHints;
 
   const prompt = `# Cook with Cursor — Build Task
 
@@ -108,35 +118,36 @@ export function buildRecipeFromIngredients(
 You are building inside an existing Next.js scaffold called "Prompt Kitchen".
 Track: ${track.name} (${track.emoji})
 ${dishName ? `Project name: ${dishName}` : ""}
+${workspace ? `Workspace slug: ${workspace.slug}` : ""}
 Event: NYC Cook with Cursor Day — 2.5 hour build window.
 
 ## Track starter
-${track.starterPrompt}${toolBlock}
+${track.starterPrompt}${toolBlock}${workspaceBlock}
 
 ## Ingredients (requirements)
 ${fragments}${spiceBlock}
 
 ## Constraints
 - Ship something demo-able in under 2 hours
-- Replace the placeholder in app/present/page.tsx with the live feature
+- Demo lives at ${workspace?.demoPath ?? "/build/{slug}"} — NOT in shared kitchen pages
 - Keep scope narrow — one killer feature beats five half-done ones
 - Match existing dark theme and component style in components/ui/
 - Do NOT add auth, databases, or payment unless it's the core demo
 
 ## Suggested files
-${track.fileHints.map((f) => `- ${f}`).join("\n")}
+${fileHints.map((f) => `- ${f}`).join("\n")}
 
 ## Done when
-- [ ] Feature works locally (npm run dev)
-- [ ] Present mode shows the demo
+- [ ] Feature works at ${workspace?.demoPath ?? "your build route"}
+- [ ] No edits outside workspace folder
 - [ ] 30-second demo script is clear
 - [ ] Deployed to Vercel (optional but impressive)`;
 
   const checklist = [
-    "Roll the dice on /kitchen (or pick manually)",
-    "Open recipe in Cursor via deeplink on /kitchen",
-    "Build core feature (90 min max)",
-    "Plate it on /present",
+    "Roll the dice → get isolated workspace folder",
+    "Open in Cursor via deeplink on /kitchen",
+    `Build ONLY in ${workspace?.projectsDir ?? "your workspace"}`,
+    `Demo at ${workspace?.demoPath ?? "/build/{slug}"}`,
     "Practice 30-sec demo twice",
     "Deploy & get shareable URL",
     "Service! Show & tell at 12:00 🏆",

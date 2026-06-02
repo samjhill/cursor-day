@@ -8,6 +8,7 @@ import type { Recipe } from "@/lib/ingredients";
 import type { Track } from "@/lib/tracks";
 import type { Spice } from "@/lib/spices";
 import type { ToolIdea } from "@/lib/tool-ideas";
+import type { BuildWorkspace } from "@/lib/build-workspace";
 import { buildCursorPromptLinks } from "@/lib/cursor-deeplink";
 
 interface Props {
@@ -17,6 +18,7 @@ interface Props {
   track: Track;
   spice?: Spice | null;
   tool?: ToolIdea | null;
+  workspace?: BuildWorkspace | null;
 }
 
 export function RecipePreview({
@@ -26,6 +28,7 @@ export function RecipePreview({
   track,
   spice,
   tool,
+  workspace,
 }: Props) {
   const links = useMemo(
     () => buildCursorPromptLinks(recipe.prompt),
@@ -77,6 +80,15 @@ export function RecipePreview({
               <p className="mt-3 text-kitchen-muted">Tool</p>
               <p className="text-emerald-300">
                 {tool.emoji} {tool.name}
+              </p>
+            </>
+          )}
+          {workspace && (
+            <>
+              <p className="mt-3 text-kitchen-muted">Workspace</p>
+              <p className="font-mono text-xs text-cyan-300">{workspace.slug}</p>
+              <p className="mt-1 font-mono text-xs text-cyan-400/80">
+                {workspace.demoPath}
               </p>
             </>
           )}

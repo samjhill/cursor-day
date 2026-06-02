@@ -7,6 +7,7 @@ import type { ToolIdea } from "@/lib/tool-ideas";
 import { AiPlater } from "./ai-plater";
 import { KitchenDashboard } from "./kitchen-dashboard";
 import { BuildSprint } from "./build-sprint";
+import { Experience } from "@/components/experience";
 
 interface Props {
   trackId: TrackId;
@@ -27,7 +28,9 @@ export function TrackWidget({
     case "visual-dash":
       return <KitchenDashboard />;
     case "interactive":
-      return (
+      return tool?.id === "slot-prompt" ? (
+        <Experience />
+      ) : (
         <BuildSprint
           dishName={dishName}
           ingredients={ingredients}

@@ -23,6 +23,12 @@ import type { ToolIdea } from "@/lib/tool-ideas";
 import { useLocalStorage } from "@/lib/hooks";
 import { recordRoll } from "@/lib/kitchen-stats";
 import { SimmerPanel } from "@/components/simmer-panel";
+import { BuildWorkspaceCard } from "@/components/build-workspace-card";
+import {
+  type BuildWorkspace,
+  WORKSPACE_KEY,
+  registerWorkspaceHistory,
+} from "@/lib/build-workspace";
 
 function KitchenContent() {
   const router = useRouter();
@@ -48,6 +54,10 @@ function KitchenContent() {
     null
   );
   const [tool, setTool] = useLocalStorage<ToolIdea | null>("pk-tool", null);
+  const [workspace, setWorkspace] = useLocalStorage<BuildWorkspace | null>(
+    WORKSPACE_KEY,
+    null
+  );
   const [, setTrackId] = useLocalStorage<TrackId>("pk-track", "ai-tool");
 
   useEffect(() => {
@@ -59,7 +69,8 @@ function KitchenContent() {
     track,
     spice,
     dishName ?? undefined,
-    tool
+    tool,
+    workspace
   );
 
   const handleRollComplete = useCallback(
@@ -67,6 +78,8 @@ function KitchenContent() {
       setSelected(result.ingredients);
       setSpice(result.spice);
       setTool(result.tool);
+      setWorkspace(result.workspace);
+      registerWorkspaceHistory(result.workspace);
       setProjectName(result.tool.name);
       setDishName(result.tool.name);
       setPitch(result.pitch);
@@ -77,7 +90,7 @@ function KitchenContent() {
       );
       router.replace(`/kitchen?track=${result.track.id}`);
     },
-    [setSelected, setSpice, setTool, setProjectName, setDishName, setPitch, setTrackId, router]
+    [setSelected, setSpice, setTool, setWorkspace, setProjectName, setDishName, setPitch, setTrackId, router]
   );
 
   const reset = () => {
@@ -87,6 +100,7 @@ function KitchenContent() {
     setSpice(null);
     setDishName(null);
     setTool(null);
+    setWorkspace(null);
     router.replace("/kitchen");
   };
 
@@ -115,6 +129,10 @@ function KitchenContent() {
           currentTrack={track}
           spice={spice}
         />
+      </div>
+
+      <div className="mb-8">
+        <BuildWorkspaceCard workspace={workspace} />
       </div>
 
       <div className="mb-8">
@@ -229,6 +247,7 @@ function KitchenContent() {
           track={track}
           spice={spice}
           tool={tool}
+          workspace={workspace}
         />
       </div>
 

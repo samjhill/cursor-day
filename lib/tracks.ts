@@ -21,10 +21,14 @@ export const TRACKS: Track[] = [
     demoSeconds: 30,
     difficulty: "Easy",
     starterPrompt: `Build a single-purpose AI tool with a clean input → output flow.
-Use the existing Next.js app. Add an API route at app/api/cook/route.ts.
-Keep the UI in app/kitchen/ or a new app/tool/page.tsx.
+Create your page at app/build/{slug}/page.tsx (workspace path from the roll).
+Put components in projects/{slug}/. Optional API at app/api/build/{slug}/route.ts.
 Mock responses if no API key; wire real AI if OPENAI_API_KEY is set.`,
-    fileHints: ["app/api/cook/route.ts", "app/tool/page.tsx"],
+    fileHints: [
+      "app/build/{slug}/page.tsx",
+      "projects/{slug}/widget.tsx",
+      "app/api/build/{slug}/route.ts",
+    ],
   },
   {
     id: "visual-dash",
@@ -35,9 +39,12 @@ Mock responses if no API key; wire real AI if OPENAI_API_KEY is set.`,
     demoSeconds: 25,
     difficulty: "Medium",
     starterPrompt: `Build a visual dashboard with at least one animated chart or live-updating metric.
-Use pure CSS/SVG or canvas — no heavy chart libraries unless you have time.
-Embed the dashboard in app/present/page.tsx for show & tell.`,
-    fileHints: ["components/dashboard.tsx", "app/present/page.tsx"],
+Create app/build/{slug}/page.tsx and projects/{slug}/ for chart components.
+Use pure CSS/SVG or canvas — no heavy chart libraries unless you have time.`,
+    fileHints: [
+      "app/build/{slug}/page.tsx",
+      "projects/{slug}/dashboard.tsx",
+    ],
   },
   {
     id: "interactive",
@@ -48,9 +55,12 @@ Embed the dashboard in app/present/page.tsx for show & tell.`,
     demoSeconds: 20,
     difficulty: "Ambitious",
     starterPrompt: `Build an interactive browser experience with immediate feedback.
-Keyboard or click interactions. One core loop, polished animations.
-Replace the demo placeholder in app/present/page.tsx.`,
-    fileHints: ["components/experience.tsx", "app/present/page.tsx"],
+Create app/build/{slug}/page.tsx and projects/{slug}/ for the experience.
+Keyboard or click interactions. One core loop, polished animations.`,
+    fileHints: [
+      "app/build/{slug}/page.tsx",
+      "projects/{slug}/experience.tsx",
+    ],
   },
 ];
 

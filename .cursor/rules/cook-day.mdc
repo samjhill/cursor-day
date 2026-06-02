@@ -13,22 +13,28 @@ alwaysApply: true
 
 ## Build Principles
 1. **Scope ruthlessly** — one killer interaction beats a half-built app
-2. **Demo-first** — every change should be visible in `/present` within 30 seconds
-3. **Match the scaffold** — dark theme, violet accent, existing `components/ui/`
-4. **No yak-shaving** — skip auth, DB, and payments unless they're the demo
+2. **Demo-first** — every change should be visible at `/build/{slug}` within 30 seconds
+3. **Isolated workspace** — each roll gets its own folder; never overwrite other builds
+4. **Match the scaffold** — dark theme, violet/amber accent, existing `components/ui/`
 5. **Ship by 11:30** — last 30 min is polish, deploy, and practice demo
 
-## File Conventions
-- Feature code: `app/tool/` or extend `app/kitchen/`
-- API routes: `app/api/`
-- Shared UI: `components/`
-- Present mode: always wire final demo into `app/present/page.tsx`
+## File Conventions (per roll)
+Each dice roll generates a unique slug (e.g. `commit-msg-chef-x7k2`). **Only edit:**
+
+- `app/build/{slug}/page.tsx` — demo page (copy from `app/build/_template/page.tsx`)
+- `projects/{slug}/` — components, hooks, utils for this tool
+- `app/api/build/{slug}/route.ts` — optional API route
+
+**Never modify** on a rolled build:
+- `app/kitchen/`, `app/present/`, `app/page.tsx`
+- Other `app/build/*` folders from previous rolls
+- Shared infrastructure like `components/experience.tsx`
 
 ## When Using Agent (⌘I)
-- Start from the recipe prompt copied on `/kitchen`
-- Ask for incremental commits: "build X, then stop so I can test"
+- Start from the recipe deeplink on `/kitchen` — it includes the workspace slug
+- Ask for incremental commits: "build X in projects/{slug}/ only, then stop"
 - If stuck >10 min, pivot track or simplify
 
 ## Deploy
 - `npx vercel` before 11:45 for a shareable URL
-- Set `NEXT_PUBLIC_APP_URL` in `.env.local`
+- Demo route: `/build/{slug}`

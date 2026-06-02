@@ -4,28 +4,22 @@ import Link from "next/link";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { TrackWidget } from "@/components/widgets/track-widget";
+import { Experience } from "@/components/experience";
 import { useLocalStorage } from "@/lib/hooks";
-import { DEFAULT_INGREDIENTS } from "@/lib/ingredients";
-import { getTrackById, type TrackId } from "@/lib/tracks";
-import type { Spice } from "@/lib/spices";
-import type { ToolIdea } from "@/lib/tool-ideas";
-import type { SimmerResponse } from "@/lib/cook-types";
 import { DEMO_SCRIPT } from "@/lib/demo-script";
+import { WORKSPACE_KEY, type BuildWorkspace } from "@/lib/build-workspace";
 
 export default function PresentPage() {
-  const [projectName] = useLocalStorage("pk-project-name", "My Cursor Creation");
-  const [pitch] = useLocalStorage(
-    "pk-pitch",
-    "Built in 2.5 hours with Cursor at NYC Tech Week."
+  const [projectName] = useLocalStorage(
+    "pk-project-name",
+    "Prompt Slot Machine"
   );
-  const [ingredients] = useLocalStorage("pk-ingredients", DEFAULT_INGREDIENTS);
-  const [spice] = useLocalStorage<Spice | null>("pk-spice", null);
-  const [trackId] = useLocalStorage<TrackId>("pk-track", "ai-tool");
-  const [tool] = useLocalStorage<ToolIdea | null>("pk-tool", null);
-  const [simmer] = useLocalStorage<SimmerResponse | null>("pk-simmer", null);
+  const [workspace] = useLocalStorage<BuildWorkspace | null>(
+    WORKSPACE_KEY,
+    null
+  );
 
-  const track = getTrackById(trackId);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-black">
@@ -37,63 +31,40 @@ export default function PresentPage() {
               Back to Kitchen
             </Button>
           </Link>
-          <span className="rounded-full bg-red-500/20 px-3 py-1 text-xs font-medium text-red-400">
-            🛎️ SERVICE · PASS
+          <span className="rounded-full bg-violet-500/20 px-3 py-1 text-xs font-medium text-violet-300">
+            🎰 INTERACTIVE · PASS
           </span>
         </div>
 
-        <div className="text-center">
+        <div className="mb-10 text-center">
           <p className="mb-2 text-sm text-kitchen-muted">Now serving</p>
-          <p className="mb-4 text-kitchen-warm">
-            {track.emoji} {track.name}
-            {spice && (
-              <span className="text-orange-400">
-                {" "}
-                · {spice.emoji} {spice.name}
-              </span>
-            )}
-          </p>
-          <h1 className="mb-6 text-5xl font-bold tracking-tight md:text-6xl">
+          <h1 className="mb-3 text-5xl font-bold tracking-tight md:text-6xl">
             {projectName}
           </h1>
-          <p className="mx-auto mb-12 max-w-2xl text-xl text-zinc-400">
-            {pitch}
+          <p className="mx-auto max-w-2xl text-xl text-zinc-400">
+            Three reels. One lever. Zero analysis paralysis.
           </p>
         </div>
 
-        <div className="mb-12">
-          <TrackWidget
-            trackId={trackId}
-            dishName={projectName}
-            ingredients={ingredients}
-            spice={spice}
-            tool={tool}
-          />
-        </div>
-
-        {simmer && (
-          <Card className="mb-12 border-orange-500/20 bg-orange-500/5">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-orange-400">
-              From simmer
+        {workspace && (
+          <Card className="mb-8 border-cyan-500/30 bg-cyan-950/10">
+            <p className="text-sm text-cyan-300">
+              Your rolled build lives in an isolated workspace — demo it here:
             </p>
-            <p className="text-sm italic text-zinc-300">{simmer.demoScript}</p>
+            <Link href={workspace.demoPath} className="mt-3 inline-block">
+              <Button size="lg" className="w-full sm:w-auto">
+                <ExternalLink className="h-4 w-4" />
+                Open {workspace.demoPath}
+              </Button>
+            </Link>
+            <p className="mt-2 font-mono text-xs text-kitchen-muted">
+              {workspace.pageFile}
+            </p>
           </Card>
         )}
 
-        <div className="mb-12 flex flex-wrap justify-center gap-2">
-          {ingredients.map((i) => (
-            <span
-              key={i.id}
-              className="rounded-full border border-kitchen-border bg-kitchen-surface px-3 py-1 text-sm"
-            >
-              {i.emoji} {i.name}
-            </span>
-          ))}
-          {spice && (
-            <span className="rounded-full border border-orange-500/40 bg-orange-500/10 px-3 py-1 text-sm text-orange-300">
-              {spice.emoji} {spice.name}
-            </span>
-          )}
+        <div className="mb-12">
+          <Experience />
         </div>
 
         <Card>
@@ -101,7 +72,7 @@ export default function PresentPage() {
           <ol className="space-y-3 text-sm text-zinc-300">
             {DEMO_SCRIPT.map((step, i) => (
               <li key={i} className="flex gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-xs font-bold text-amber-400">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-xs font-bold text-violet-400">
                   {i + 1}
                 </span>
                 {step}
@@ -111,10 +82,27 @@ export default function PresentPage() {
         </Card>
 
         <p className="mt-8 text-center text-xs text-kitchen-muted">
-          Deploy URL: add{" "}
-          <code className="text-amber-400">NEXT_PUBLIC_APP_URL</code> to .env
-          and show the live link
-          <ExternalLink className="ml-1 inline h-3 w-3" />
+          {appUrl ? (
+            <>
+              Live at{" "}
+              <a
+                href={appUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-violet-400 hover:underline"
+              >
+                {appUrl}
+                <ExternalLink className="ml-1 inline h-3 w-3" />
+              </a>
+            </>
+          ) : (
+            <>
+              Deploy with{" "}
+              <code className="text-violet-400">npx vercel</code> and set{" "}
+              <code className="text-violet-400">NEXT_PUBLIC_APP_URL</code> in
+              .env.local
+            </>
+          )}
         </p>
       </div>
     </div>

@@ -1,10 +1,12 @@
 export const DEMO_SCRIPT = [
-  "Hook (5s): \"I built [X] in 2.5 hours with Cursor at Cook Day.\"",
-  "Problem (5s): One sentence on who it's for and why it matters.",
-  "Live demo (15s): Show the ONE core interaction — input → magic → output.",
-  "Cursor angle (5s): \"Cursor Agent wrote ~80% of this — I steered with ingredients and prompts.\"",
-  "Close (5s): Live URL or QR code. \"Happy to share the repo.\"",
+  "Hook (5s): \"I built a Prompt Slot Machine in 2.5 hours with Cursor at Cook Day.\"",
+  "Problem (5s): Hackathon builders get analysis paralysis — this forces a shippable scope in one pull.",
+  "Live demo (15s): Pull the lever three times — reels stop staggered — copy the prompt into Cursor Agent.",
+  "Cursor angle (5s): \"Cursor Agent wrote ~80% of this — I steered with ingredients and the slot reels.\"",
+  "Close (5s): Live URL or QR. \"Happy to share the repo — pull the lever and build what lands.\"",
 ];
+
+export const SLOT_DEMO_SCRIPT = DEMO_SCRIPT;
 
 export const JUDGING_TIPS = [
   "Works live — no slides, no 'it works on my machine'",
