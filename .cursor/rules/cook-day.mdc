@@ -1,0 +1,34 @@
+---
+description: NYC Cook with Cursor Day — event-specific build guidance
+globs:
+alwaysApply: true
+---
+
+# Cook with Cursor Day Rules
+
+## Context
+- Event: NYC Cook with Cursor, June 2 2026, 9 AM–12:30 PM ET
+- Build window: ~2.5 hours (9:45 AM – 12:00 PM show & tell)
+- Goal: One demo-able feature that wins show & tell
+
+## Build Principles
+1. **Scope ruthlessly** — one killer interaction beats a half-built app
+2. **Demo-first** — every change should be visible in `/present` within 30 seconds
+3. **Match the scaffold** — dark theme, violet accent, existing `components/ui/`
+4. **No yak-shaving** — skip auth, DB, and payments unless they're the demo
+5. **Ship by 11:30** — last 30 min is polish, deploy, and practice demo
+
+## File Conventions
+- Feature code: `app/tool/` or extend `app/kitchen/`
+- API routes: `app/api/`
+- Shared UI: `components/`
+- Present mode: always wire final demo into `app/present/page.tsx`
+
+## When Using Agent (⌘I)
+- Start from the recipe prompt copied on `/kitchen`
+- Ask for incremental commits: "build X, then stop so I can test"
+- If stuck >10 min, pivot track or simplify
+
+## Deploy
+- `npx vercel` before 11:45 for a shareable URL
+- Set `NEXT_PUBLIC_APP_URL` in `.env.local`
