@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
-import { ExternalLink, CheckCircle2, ClipboardList } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { ExternalLink, CheckCircle2, ClipboardList, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Recipe } from "@/lib/ingredients";
@@ -34,6 +34,17 @@ export function RecipePreview({
     () => buildCursorPromptLinks(recipe.prompt),
     [recipe.prompt]
   );
+  const [copied, setCopied] = useState(false);
+
+  const copyFullPrompt = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(recipe.prompt);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* ignore */
+    }
+  }, [recipe.prompt]);
 
   return (
     <div className="space-y-6">
@@ -66,10 +77,25 @@ export function RecipePreview({
         </div>
 
         {links.truncated && (
-          <p className="mb-4 text-xs text-amber-400/90">
-            Prompt trimmed for deeplink limit — full text stays in the preview
-            below.
-          </p>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200/90">
+            <p>
+              Deeplink hit Cursor&apos;s 8k URL limit — tail trimmed. Copy the
+              full prompt below into Agent if anything is missing.
+            </p>
+            <Button type="button" size="sm" variant="outline" onClick={copyFullPrompt}>
+              {copied ? (
+                <>
+                  <Check className="h-3.5 w-3.5" />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <Copy className="h-3.5 w-3.5" />
+                  Copy full prompt
+                </>
+              )}
+            </Button>
+          </div>
         )}
 
         <div className="mb-4 rounded-lg border border-dashed border-amber-500/30 bg-kitchen-bg p-4 text-sm">
