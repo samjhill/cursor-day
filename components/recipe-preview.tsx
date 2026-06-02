@@ -64,6 +64,19 @@ export function RecipePreview({
                 <Button size="sm">Open in Cursor</Button>
               </a>
             )}
+            <Button type="button" size="sm" variant="outline" onClick={copyFullPrompt}>
+              {copied ? (
+                <>
+                  <Check className="h-3.5 w-3.5" />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <Copy className="h-3.5 w-3.5" />
+                  Copy prompt
+                </>
+              )}
+            </Button>
             <a
               href={links.webUrl}
               target="_blank"
@@ -77,24 +90,9 @@ export function RecipePreview({
         </div>
 
         {links.truncated && (
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200/90">
-            <p>
-              Deeplink hit Cursor&apos;s 8k URL limit — tail trimmed. Copy the
-              full prompt below into Agent if anything is missing.
-            </p>
-            <Button type="button" size="sm" variant="outline" onClick={copyFullPrompt}>
-              {copied ? (
-                <>
-                  <Check className="h-3.5 w-3.5" />
-                  Copied
-                </>
-              ) : (
-                <>
-                  <Copy className="h-3.5 w-3.5" />
-                  Copy full prompt
-                </>
-              )}
-            </Button>
+          <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200/90">
+            Deeplink hit Cursor&apos;s 8k URL limit — tail trimmed. Use{" "}
+            <strong>Copy prompt</strong> for the full text if anything is missing.
           </div>
         )}
 

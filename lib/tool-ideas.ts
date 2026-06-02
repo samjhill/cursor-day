@@ -110,6 +110,114 @@ export const TOOL_IDEAS: ToolIdea[] = [
     buildBrief:
       "Long text in → numbered tweet cards out. Char count per tweet. Copy thread button.",
   },
+  {
+    id: "changelog",
+    emoji: "📋",
+    name: "Changelog Writer",
+    tagline: "Bullet what changed → Keep a Changelog format.",
+    description:
+      "Paste rough release notes or commit bullets; output Added / Changed / Fixed sections.",
+    tracks: ["ai-tool"],
+    demoHook: "Three messy bullets → polished CHANGELOG.md block.",
+    buildBrief:
+      "Bullets in → categorized changelog markdown. Copy button. Optional version + date fields.",
+  },
+  {
+    id: "sql-explainer",
+    emoji: "🗃️",
+    name: "SQL Plain English",
+    tagline: "Paste a query → step-by-step explanation.",
+    description:
+      "Break down SELECT/JOIN/WHERE clauses for juniors learning to read production queries.",
+    tracks: ["ai-tool"],
+    demoHook: "Paste a gnarly JOIN → see what each clause actually does.",
+    buildBrief:
+      "SQL textarea → numbered explanation list per clause. Sample query prefill. Mock parser or AI.",
+  },
+  {
+    id: "tone-shifter",
+    emoji: "🎭",
+    name: "Tone Shifter",
+    tagline: "Same message, three voices: formal, casual, technical.",
+    description:
+      "Rewrite Slack drafts or emails so you sound professional, friendly, or engineer-brained.",
+    tracks: ["ai-tool"],
+    demoHook: "Type 'hey can u fix the bug' → get three polished variants.",
+    buildBrief:
+      "Single input → three tabbed outputs (Formal / Casual / Technical). Copy per tab. Mock templates OK.",
+  },
+  {
+    id: "api-namer",
+    emoji: "🏷️",
+    name: "API Route Namer",
+    tagline: "Describe an endpoint → REST path suggestions.",
+    description:
+      "Natural language like 'get user profile' → `/users/:id`, method, and status code hints.",
+    tracks: ["ai-tool"],
+    demoHook: "Type 'delete expired sessions' → get REST naming options.",
+    buildBrief:
+      "Description in → 3 route suggestions with HTTP method + example JSON. Copy path button.",
+  },
+  {
+    id: "variable-namer",
+    emoji: "🔤",
+    name: "Variable Name Fixer",
+    tagline: "Vague names → descriptive identifier suggestions.",
+    description:
+      "Paste `x`, `data2`, `temp` with context; get camelCase/snake_case renames that read well.",
+    tracks: ["ai-tool"],
+    demoHook: "Paste `const d = fetch()` → get `userProfileResponse` suggestions.",
+    buildBrief:
+      "Code snippet + optional context → 3 rename suggestions with one-line rationale. Copy button.",
+  },
+  {
+    id: "meeting-cost",
+    emoji: "💰",
+    name: "Meeting Cost Calculator",
+    tagline: "Attendees × duration × rate → real dollar cost.",
+    description:
+      "Enter headcount, hourly rate, and minutes — show how expensive that standup actually was.",
+    tracks: ["ai-tool"],
+    demoHook: "12 people × 30 min × $150/hr — watch the number hurt.",
+    buildBrief:
+      "Three inputs → big cost number + 'could have shipped X' quip. Slider for duration. Shareable result.",
+  },
+  {
+    id: "readme-gen",
+    emoji: "📄",
+    name: "README Starter",
+    tagline: "Project blurb → README skeleton with badges.",
+    description:
+      "One paragraph about your hackathon project → markdown README with install, usage, and demo sections.",
+    tracks: ["ai-tool"],
+    demoHook: "Describe your app in two sentences → paste-ready README.",
+    buildBrief:
+      "Short description in → markdown README template out. Sections: Install, Usage, Demo, License. Copy button.",
+  },
+  {
+    id: "test-case-gen",
+    emoji: "🧪",
+    name: "Test Case Generator",
+    tagline: "Function signature → happy path + edge case list.",
+    description:
+      "Paste a function name and params; get a checklist of unit test scenarios to write.",
+    tracks: ["ai-tool"],
+    demoHook: "Paste `validateEmail(str)` → get 5 test cases including edge cases.",
+    buildBrief:
+      "Function signature input → numbered test scenarios (happy, empty, invalid, boundary). Copy as checklist.",
+  },
+  {
+    id: "branch-namer",
+    emoji: "🌿",
+    name: "Git Branch Namer",
+    tagline: "Ticket + summary → conventional branch name.",
+    description:
+      "Turn 'fix login bug on mobile' into `fix/mobile-login-timeout` with type prefix suggestions.",
+    tracks: ["ai-tool"],
+    demoHook: "Type a ticket title → get feat/fix/chore branch options.",
+    buildBrief:
+      "Summary input → 3 branch name variants (kebab-case). Copy button. Optional ticket number prefix.",
+  },
 
   // ── Visual Dashboard ──────────────────────────────────────────
   {
@@ -195,6 +303,102 @@ export const TOOL_IDEAS: ToolIdea[] = [
     demoHook: "Type $847 for 6 people — instant per-person + tip.",
     buildBrief:
       "Amount, people, tip %. Animated pie chart of shares. Copy venmo-style request text.",
+  },
+  {
+    id: "contrib-graph",
+    emoji: "🟩",
+    name: "Contribution Graph",
+    tagline: "GitHub-style heatmap you can click to fill in.",
+    description:
+      "52-week grid of squares — click to log a 'ship day' and watch your streak grow.",
+    tracks: ["visual-dash"],
+    demoHook: "Click today's square — watch the grid light up green.",
+    buildBrief:
+      "SVG or CSS grid of 52×7 squares. localStorage ship dates. Hover tooltip with count. Streak stat.",
+  },
+  {
+    id: "sleep-tracker",
+    emoji: "😴",
+    name: "Sleep Debt Dashboard",
+    tagline: "Log hours slept → weekly deficit chart.",
+    description:
+      "Track last 7 nights vs 8-hour target; bar chart shows cumulative sleep debt.",
+    tracks: ["visual-dash"],
+    demoHook: "Log 5 hours — watch the debt bar climb into the red.",
+    buildBrief:
+      "Hours input per day. 7-day bar chart with target line. Running debt total. localStorage persistence.",
+  },
+  {
+    id: "word-frequency",
+    emoji: "☁️",
+    name: "Word Cloud Builder",
+    tagline: "Paste text → sized word frequency viz.",
+    description:
+      "Drop in a paragraph or README; render words sized by count with animated entrance.",
+    tracks: ["visual-dash"],
+    demoHook: "Paste your commit messages — see which words dominate.",
+    buildBrief:
+      "Textarea → tokenize → word frequency map. CSS-sized spans or canvas cloud. Top 20 words. Regenerate button.",
+  },
+  {
+    id: "burndown",
+    emoji: "📉",
+    name: "Sprint Burndown",
+    tagline: "Mock story points chart with ideal vs actual line.",
+    description:
+      "Pre-seeded sprint data with draggable or auto-updating remaining points line.",
+    tracks: ["visual-dash"],
+    demoHook: "Click 'complete task' — watch the burndown line drop.",
+    buildBrief:
+      "SVG line chart: ideal dashed + actual solid. Buttons to knock off 1–3 points. Day labels on X axis.",
+  },
+  {
+    id: "leaderboard",
+    emoji: "🏆",
+    name: "Hackathon Leaderboard",
+    tagline: "Add teams + scores → animated ranking board.",
+    description:
+      "Enter team names and points; sorted bar race or podium view for show & tell.",
+    tracks: ["visual-dash"],
+    demoHook: "Add three teams, bump scores — watch bars reorder live.",
+    buildBrief:
+      "Add team + score form. Horizontal bar chart sorted by score. Bump +/- buttons. localStorage entries.",
+  },
+  {
+    id: "focus-time",
+    emoji: "🎯",
+    name: "Deep Work Tracker",
+    tagline: "Log focus blocks → daily and weekly totals.",
+    description:
+      "Tap to start/stop a focus session; dashboard shows today's minutes and 7-day trend.",
+    tracks: ["visual-dash"],
+    demoHook: "Start a block, stop it — see today's total tick up.",
+    buildBrief:
+      "Start/stop timer button. Log sessions to localStorage. Today's total + 7-day mini bar chart. Big minute counter.",
+  },
+  {
+    id: "deploy-timeline",
+    emoji: "🚀",
+    name: "Deploy Timeline",
+    tagline: "Vertical timeline of mock releases with status dots.",
+    description:
+      "Hardcoded deploy history with success/fail/rollback markers and hover details.",
+    tracks: ["visual-dash"],
+    demoHook: "Scroll the timeline — one deploy is pulsing red 'rollback'.",
+    buildBrief:
+      "Vertical timeline CSS. 5–8 mock deploys with version, time, status color. Active/latest glows. Mobile scroll.",
+  },
+  {
+    id: "poll-results",
+    emoji: "📊",
+    name: "Live Poll Results",
+    tagline: "Audience votes → real-time bar chart update.",
+    description:
+      "Present a question with 3–4 options; tap to vote and watch bars animate to new percentages.",
+    tracks: ["visual-dash"],
+    demoHook: "Ask the room to shout A or B — tap votes, chart updates.",
+    buildBrief:
+      "Question + 4 options. Click to vote (localStorage totals). Animated horizontal % bars. Reset poll button.",
   },
 
   // ── Interactive ───────────────────────────────────────────────
@@ -293,6 +497,126 @@ export const TOOL_IDEAS: ToolIdea[] = [
     demoHook: "Start with 'Notion + Slack + AI' — end with one checkbox.",
     buildBrief:
       "Start with bloated feature list. Click to 'cut' items with animation. Win when 1 feature left. Timer optional.",
+  },
+  {
+    id: "hot-or-not",
+    emoji: "🔥",
+    name: "Feature Hot or Not",
+    tagline: "Swipe yes/no on feature ideas — see crowd favorites.",
+    description:
+      "Tinder-style cards with product feature ideas; track local yes/no ratios after a session.",
+    tracks: ["interactive"],
+    demoHook: "Swipe on 'dark mode' vs 'AI chat' — see which wins.",
+    buildBrief:
+      "Card stack with 5–8 feature ideas. Swipe or button yes/no. Results screen with % breakdown. localStorage votes.",
+  },
+  {
+    id: "mad-libs-prompt",
+    emoji: "📜",
+    name: "Mad Libs Prompt Builder",
+    tagline: "Fill blanks → complete Cursor Agent prompt.",
+    description:
+      "Pick audience, feature, and constraint from dropdowns; assemble a copy-ready build prompt.",
+    tracks: ["interactive"],
+    demoHook: "Pick 'hackathon' + 'dashboard' + 'no backend' → copy prompt.",
+    buildBrief:
+      "3–4 dropdowns or word chips. Live preview of assembled prompt below. Copy button. Fun kitchen-themed options.",
+  },
+  {
+    id: "bingo-card",
+    emoji: "🎱",
+    name: "Hackathon Bingo",
+    tagline: "Random 5×5 card of dev conference clichés.",
+    description:
+      "Generate a bingo board ('works on my machine', 'just one more commit'); tap to mark squares.",
+    tracks: ["interactive"],
+    demoHook: "Generate a card — first to BINGO during show & tell wins.",
+    buildBrief:
+      "25 cliché phrases in pool. Random 5×5 grid. Click to mark. BINGO detection on row/col/diag. New card button.",
+  },
+  {
+    id: "icebreaker",
+    emoji: "🧊",
+    name: "Icebreaker Spinner",
+    tagline: "Spin for a random team bonding question.",
+    description:
+      "Wheel or card flip with fun questions for standups, offsites, or hackathon intros.",
+    tracks: ["interactive"],
+    demoHook: "Spin once — read the question aloud to the room.",
+    buildBrief:
+      "20+ hardcoded questions. Spin animation or random card flip. 'Another one' button. Big readable text.",
+  },
+  {
+    id: "applause-meter",
+    emoji: "👏",
+    name: "Applause Meter",
+    tagline: "Tap fast — gauge hits 100% when the crowd goes wild.",
+    description:
+      "Big button or spacebar mash; meter fills with decay over time — perfect for judging demos.",
+    tracks: ["interactive"],
+    demoHook: "Everyone mash the button after a demo — watch the meter peak.",
+    buildBrief:
+      "Click/spacebar increases meter. Decay over time (requestAnimationFrame). Peak score + confetti at 100%. localStorage high score.",
+  },
+  {
+    id: "quiz-buzzer",
+    emoji: "🔔",
+    name: "Dev Trivia Buzzer",
+    tagline: "Multiple choice — first tap wins, instant reveal.",
+    description:
+      "10 hardcoded dev trivia questions with 4 options; timer optional, score at end.",
+    tracks: ["interactive"],
+    demoHook: "Ask the room — reveal answer with a satisfying green flash.",
+    buildBrief:
+      "Question card + 4 buttons. Click → correct/incorrect feedback + short explanation. Progress 1/10. Final score screen.",
+  },
+  {
+    id: "password-strength",
+    emoji: "🔐",
+    name: "Password Strength Game",
+    tagline: "Type a password — live crack-time estimate + tips.",
+    description:
+      "Interactive meter that updates as you type with entropy estimate and improvement hints.",
+    tracks: ["interactive"],
+    demoHook: "Type 'password123' — watch it go red in real time.",
+    buildBrief:
+      "Password input with show/hide toggle. Live strength bar (weak/fair/strong). Checklist: length, symbols, numbers. Fun copy.",
+  },
+  {
+    id: "reaction-time",
+    emoji: "⚡",
+    name: "Reaction Time Test",
+    tagline: "Wait for green — click as fast as you can.",
+    description:
+      "Classic reflex test: red → wait → green → measure ms. Local best-of-three score.",
+    tracks: ["interactive"],
+    demoHook: "Challenge someone in the audience — compare ms scores.",
+    buildBrief:
+      "States: idle, waiting (red), go (green), result. Click too early = false start. Show ms + personal best. localStorage.",
+  },
+  {
+    id: "color-guesser",
+    emoji: "🎨",
+    name: "Hex Color Guesser",
+    tagline: "See a color — pick the closest hex from options.",
+    description:
+      "Show a swatch; four hex choices, one correct. Score streak over 5 rounds.",
+    tracks: ["interactive"],
+    demoHook: "Can you tell #7C3AED from #8B5CF6? The room tries.",
+    buildBrief:
+      "Random color swatch. 4 hex options (1 correct, 3 close decoys). Streak counter. 5 rounds then results. CSS color blocks.",
+  },
+  {
+    id: "estimate-game",
+    emoji: "🃏",
+    name: "Planning Poker Lite",
+    tagline: "Pick a story point card — reveal team votes.",
+    description:
+      "Simulated planning poker: pick 1/2/3/5/8/13, then flip to see mock team votes and consensus.",
+    tracks: ["interactive"],
+    demoHook: "Pick 8 — reveal that the 'team' split between 5 and 13.",
+    buildBrief:
+      "Fibonacci card picker. Flip animation reveals 3 mock teammate votes. Highlight spread vs consensus. New story button.",
   },
 ];
 

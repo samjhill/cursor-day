@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -10,6 +10,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Presentation,
+  Clapperboard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -42,14 +43,19 @@ import {
   WORKSPACE_KEY,
   registerWorkspaceHistory,
 } from "@/lib/build-workspace";
+import { demoKitchenRoll } from "@/lib/randomizer";
+import { KITCHEN_DEMO_SCRIPT } from "@/lib/demo-script";
 
 function KitchenContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const trackParam = searchParams.get("track") as TrackId | null;
+  const demoMode = searchParams.get("demo") === "1";
   const track = getTrackById(trackParam);
+  const demoApplied = useRef(false);
 
   const [step, setStep] = useLocalStorage<KitchenStep>(KITCHEN_STEP_KEY, 0);
+  const [showDemoScript, setShowDemoScript] = useState(false);
   const [selected, setSelected] = useLocalStorage<Ingredient[]>(
     "pk-ingredients",
     DEFAULT_INGREDIENTS
@@ -96,7 +102,7 @@ function KitchenContent() {
     workspace
   );
 
-  const handleRollComplete = useCallback(
+  const applyRoll = useCallback(
     (result: RollResult) => {
       setSelected(result.ingredients);
       setSpice(result.spice);
@@ -111,8 +117,7 @@ function KitchenContent() {
         result.spice.id,
         result.ingredients.map((i) => i.id)
       );
-      router.replace(`/kitchen?track=${result.track.id}`);
-      setStep(1);
+      router.replace(`/kitchen?track=${result.track.id}${demoMode ? "&demo=1" : ""}`);
     },
     [
       setSelected,
@@ -124,9 +129,24 @@ function KitchenContent() {
       setPitch,
       setTrackId,
       router,
-      setStep,
+      demoMode,
     ]
   );
+
+  const handleRollComplete = useCallback(
+    (result: RollResult) => {
+      applyRoll(result);
+      setStep(1);
+    },
+    [applyRoll, setStep]
+  );
+
+  useEffect(() => {
+    if (!demoMode || demoApplied.current) return;
+    demoApplied.current = true;
+    applyRoll(demoKitchenRoll());
+    setStep(3);
+  }, [demoMode, applyRoll, setStep]);
 
   const reset = () => {
     setSelected(DEFAULT_INGREDIENTS);
@@ -178,6 +198,28 @@ function KitchenContent() {
         maxReached={maxReached}
         onStepClick={setStep}
       />
+
+      {demoMode && (
+        <Card className="mb-6 border-violet-500/40 bg-violet-500/10">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <Clapperboard className="mt-0.5 h-5 w-5 shrink-0 text-violet-400" />
+              <div>
+                <p className="font-medium text-violet-200">Present mode</p>
+                <p className="mt-1 text-sm text-zinc-400">
+                  Hero roll loaded — Commit Message Chef · Secret Ingredient: Cursor.
+                  Jump to any step via the nav above.
+                </p>
+              </div>
+            </div>
+            <Link href="/kitchen">
+              <Button size="sm" variant="outline">
+                Exit demo
+              </Button>
+            </Link>
+          </div>
+        </Card>
+      )}
 
       <div className="animate-fade-in">
         {step === 0 && (
@@ -343,6 +385,23 @@ function KitchenContent() {
               workspace={workspace}
             />
           </div>
+        )}
+      </div>
+
+      <div className="mt-10 border-t border-kitchen-border pt-6">
+        <button
+          type="button"
+          onClick={() => setShowDemoScript((s) => !s)}
+          className="text-sm text-zinc-500 transition-colors hover:text-violet-400"
+        >
+          {showDemoScript ? "Hide" : "Show"} 30-second demo script
+        </button>
+        {showDemoScript && (
+          <ul className="mt-3 animate-fade-in space-y-2 rounded-lg border border-kitchen-border/60 bg-zinc-900/40 p-4 text-sm text-zinc-400">
+            {KITCHEN_DEMO_SCRIPT.map((line, i) => (
+              <li key={i}>{line}</li>
+            ))}
+          </ul>
         )}
       </div>
 

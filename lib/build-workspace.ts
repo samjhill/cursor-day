@@ -18,10 +18,7 @@ export interface BuildWorkspace {
 export const WORKSPACE_KEY = "pk-build-workspace";
 export const WORKSPACE_HISTORY_KEY = "pk-build-history";
 
-export function createBuildWorkspace(tool: ToolIdea): BuildWorkspace {
-  const suffix = Math.random().toString(36).slice(2, 6);
-  const slug = `${tool.id}-${suffix}`;
-
+function workspaceFromSlug(tool: ToolIdea, slug: string): BuildWorkspace {
   return {
     slug,
     toolId: tool.id,
@@ -32,6 +29,16 @@ export function createBuildWorkspace(tool: ToolIdea): BuildWorkspace {
     projectsDir: `projects/${slug}/`,
     apiFile: `app/api/build/${slug}/route.ts`,
   };
+}
+
+export function createBuildWorkspace(tool: ToolIdea): BuildWorkspace {
+  const suffix = Math.random().toString(36).slice(2, 6);
+  return workspaceFromSlug(tool, `${tool.id}-${suffix}`);
+}
+
+/** Stable slug for /kitchen?demo=1 — predictable prompt on stage. */
+export function createDemoBuildWorkspace(tool: ToolIdea): BuildWorkspace {
+  return workspaceFromSlug(tool, `${tool.id}-chef-demo`);
 }
 
 export function workspacePromptBlock(ws: BuildWorkspace): string {

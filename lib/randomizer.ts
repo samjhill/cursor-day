@@ -3,7 +3,12 @@ import { INGREDIENTS } from "./ingredients";
 import { SPICES, type Spice, randomChefQuote } from "./spices";
 import { pickToolForTrack, type ToolIdea } from "./tool-ideas";
 import { TRACKS, type Track, type TrackId } from "./tracks";
-import { createBuildWorkspace, type BuildWorkspace } from "./build-workspace";
+import {
+  createBuildWorkspace,
+  createDemoBuildWorkspace,
+  type BuildWorkspace,
+} from "./build-workspace";
+import { TOOL_IDEAS } from "./tool-ideas";
 
 export interface RollResult {
   track: Track;
@@ -88,4 +93,30 @@ export function rollKitchen(): RollResult {
 
 export function trackIdFromRoll(track: Track): TrackId {
   return track.id;
+}
+
+const DEMO_INGREDIENT_IDS = ["nextjs", "ai-api", "voice", "cursor-meta"] as const;
+
+/** Hero roll for /kitchen?demo=1 — Commit Message Chef, AI track, Cursor spice. */
+export function demoKitchenRoll(): RollResult {
+  const track = TRACKS.find((t) => t.id === "ai-tool") ?? TRACKS[0];
+  const tool = TOOL_IDEAS.find((t) => t.id === "commit-msg") ?? TOOL_IDEAS[0];
+  const spice = SPICES.find((s) => s.id === "secret-cursor") ?? SPICES[0];
+  const ingredients = DEMO_INGREDIENT_IDS.map(
+    (id) => INGREDIENTS.find((i) => i.id === id)!
+  ).filter(Boolean);
+
+  const pitch = `${tool.tagline} ${tool.demoHook}`;
+
+  return {
+    track,
+    tool,
+    workspace: createDemoBuildWorkspace(tool),
+    ingredients,
+    spice,
+    dishName: tool.name,
+    chefQuote: "Demo mode — same roll every time. Perfect for show & tell.",
+    pitch,
+    dice: { track: 1, tool: 1, ingredientCount: 4, spice: 4 },
+  };
 }
