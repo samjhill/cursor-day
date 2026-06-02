@@ -39,7 +39,7 @@ export async function POST(request: Request) {
   }
 
   if (body.action === "simmer") {
-    const { dishName, pitch, trackId, ingredients, spice } = body;
+    const { dishName, pitch, trackId, ingredients, spice, toolName, toolBrief } = body;
     if (!dishName?.trim() || !trackId) {
       return NextResponse.json(
         { error: "dishName and trackId are required" },
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     }
 
     const aiText = await callOpenAI(
-      buildSimmerPrompt(dishName, pitch ?? "", trackId, ingredients ?? [], spice)
+      buildSimmerPrompt(dishName, pitch ?? "", trackId, ingredients ?? [], spice, toolName, toolBrief)
     );
 
     if (aiText) {
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      mockSimmer(dishName, pitch ?? "", trackId, ingredients ?? [], spice)
+      mockSimmer(dishName, pitch ?? "", trackId, ingredients ?? [], spice, toolName, toolBrief)
     );
   }
 

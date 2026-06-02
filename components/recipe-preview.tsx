@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import type { Recipe } from "@/lib/ingredients";
 import type { Track } from "@/lib/tracks";
 import type { Spice } from "@/lib/spices";
+import type { ToolIdea } from "@/lib/tool-ideas";
 import { buildCursorPromptLinks } from "@/lib/cursor-deeplink";
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
   pitch: string;
   track: Track;
   spice?: Spice | null;
+  tool?: ToolIdea | null;
 }
 
 export function RecipePreview({
@@ -23,6 +25,7 @@ export function RecipePreview({
   pitch,
   track,
   spice,
+  tool,
 }: Props) {
   const links = useMemo(
     () => buildCursorPromptLinks(recipe.prompt),
@@ -69,6 +72,14 @@ export function RecipePreview({
         <div className="mb-4 rounded-lg border border-dashed border-amber-500/30 bg-kitchen-bg p-4 text-sm">
           <p className="text-kitchen-muted">Dish</p>
           <p className="font-medium">{projectName}</p>
+          {tool && (
+            <>
+              <p className="mt-3 text-kitchen-muted">Tool</p>
+              <p className="text-emerald-300">
+                {tool.emoji} {tool.name}
+              </p>
+            </>
+          )}
           <p className="mt-3 text-kitchen-muted">Ticket</p>
           <p className="text-zinc-300">{pitch}</p>
           <p className="mt-3 text-kitchen-muted">Course</p>

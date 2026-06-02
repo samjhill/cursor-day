@@ -20,6 +20,8 @@ export interface SimmerRequest {
   trackId: TrackId;
   ingredients: CookIngredient[];
   spice?: CookSpice | null;
+  toolName?: string;
+  toolBrief?: string;
 }
 
 export interface PlateRequest {
@@ -29,6 +31,8 @@ export interface PlateRequest {
   trackId?: TrackId;
   ingredients?: CookIngredient[];
   spice?: CookSpice | null;
+  toolName?: string;
+  toolBrief?: string;
 }
 
 export type CookRequest = SimmerRequest | PlateRequest;

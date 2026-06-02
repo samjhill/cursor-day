@@ -5,6 +5,7 @@ import { ChefHat, Flame, Presentation, Dices } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TRACKS } from "@/lib/tracks";
+import { TOOL_IDEAS, toolsForTrack } from "@/lib/tool-ideas";
 
 export default function HomePage() {
   return (
@@ -98,6 +99,38 @@ export default function HomePage() {
             </Button>
           </Link>
         </Card>
+      </section>
+
+      <section className="mb-20">
+        <h2 className="mb-2 text-center text-2xl font-semibold">
+          What You Might Build
+        </h2>
+        <p className="mb-8 text-center text-sm text-zinc-400">
+          {TOOL_IDEAS.length} useful tools in the menu — the dice pick one for your track
+        </p>
+        <div className="grid gap-8 md:grid-cols-3">
+          {TRACKS.map((track) => (
+            <Card key={track.id}>
+              <h3 className="mb-4 font-semibold">
+                {track.emoji} {track.name}
+              </h3>
+              <ul className="space-y-3">
+                {toolsForTrack(track.id).slice(0, 4).map((t) => (
+                  <li key={t.id} className="text-sm">
+                    <span className="mr-1">{t.emoji}</span>
+                    <span className="font-medium text-zinc-200">{t.name}</span>
+                    <p className="text-xs text-kitchen-muted">{t.tagline}</p>
+                  </li>
+                ))}
+              </ul>
+              {toolsForTrack(track.id).length > 4 && (
+                <p className="mt-4 text-xs text-kitchen-muted">
+                  +{toolsForTrack(track.id).length - 4} more on the roll
+                </p>
+              )}
+            </Card>
+          ))}
+        </div>
       </section>
 
       <section>

@@ -19,6 +19,7 @@ import {
   DEFAULT_INGREDIENTS,
 } from "@/lib/ingredients";
 import type { Spice } from "@/lib/spices";
+import type { ToolIdea } from "@/lib/tool-ideas";
 import { useLocalStorage } from "@/lib/hooks";
 import { recordRoll } from "@/lib/kitchen-stats";
 import { SimmerPanel } from "@/components/simmer-panel";
@@ -46,6 +47,7 @@ function KitchenContent() {
     "pk-dish-name",
     null
   );
+  const [tool, setTool] = useLocalStorage<ToolIdea | null>("pk-tool", null);
   const [, setTrackId] = useLocalStorage<TrackId>("pk-track", "ai-tool");
 
   useEffect(() => {
@@ -56,18 +58,18 @@ function KitchenContent() {
     selected,
     track,
     spice,
-    dishName ?? undefined
+    dishName ?? undefined,
+    tool
   );
 
   const handleRollComplete = useCallback(
     (result: RollResult) => {
       setSelected(result.ingredients);
       setSpice(result.spice);
-      setProjectName(result.dishName);
-      setDishName(result.dishName);
-      setPitch(
-        `${result.chefQuote} Wild spice: ${result.spice.name}.`
-      );
+      setTool(result.tool);
+      setProjectName(result.tool.name);
+      setDishName(result.tool.name);
+      setPitch(result.pitch);
       setTrackId(result.track.id);
       recordRoll(
         result.spice.id,
@@ -75,7 +77,7 @@ function KitchenContent() {
       );
       router.replace(`/kitchen?track=${result.track.id}`);
     },
-    [setSelected, setSpice, setProjectName, setDishName, setPitch, setTrackId, router]
+    [setSelected, setSpice, setTool, setProjectName, setDishName, setPitch, setTrackId, router]
   );
 
   const reset = () => {
@@ -84,6 +86,7 @@ function KitchenContent() {
     setPitch("Built in 2.5 hours with Cursor at NYC Tech Week.");
     setSpice(null);
     setDishName(null);
+    setTool(null);
     router.replace("/kitchen");
   };
 
@@ -121,6 +124,7 @@ function KitchenContent() {
           track={track}
           ingredients={selected}
           spice={spice}
+          tool={tool}
         />
       </div>
 
@@ -148,6 +152,23 @@ function KitchenContent() {
               className="mt-2 w-full resize-none rounded-lg border border-kitchen-border bg-kitchen-bg px-4 py-2.5 outline-none focus:border-amber-500"
             />
           </Card>
+
+          {tool && (
+            <Card className="border-emerald-500/40 bg-emerald-500/5">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">{tool.emoji}</span>
+                <div>
+                  <p className="font-semibold text-emerald-300">
+                    Build: {tool.name}
+                  </p>
+                  <p className="mt-1 text-sm text-zinc-300">{tool.description}</p>
+                  <p className="mt-2 text-xs text-emerald-400/80">
+                    Demo: {tool.demoHook}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          )}
 
           {spice && (
             <Card className="border-orange-500/40 bg-orange-500/5">
@@ -207,6 +228,7 @@ function KitchenContent() {
           pitch={pitch}
           track={track}
           spice={spice}
+          tool={tool}
         />
       </div>
 

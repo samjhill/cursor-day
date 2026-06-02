@@ -49,18 +49,29 @@ export function mockSimmer(
   pitch: string,
   trackId: TrackId,
   ingredients: CookIngredient[],
-  spice?: CookSpice | null
+  spice?: CookSpice | null,
+  toolName?: string,
+  toolBrief?: string
 ): SimmerResponse {
   const track = getTrackById(trackId);
-  const features = [
-    ...FEATURE_TEMPLATES[trackId].map((f, i) =>
-      i === 0 ? `${f} for "${dishName}"` : f
-    ),
-    ingredientHint(ingredients),
-  ];
+  const features = toolBrief
+    ? [
+        toolBrief,
+        `Ship "${toolName ?? dishName}" as the core demo on /present`,
+        "One input → one output (or one interaction loop)",
+        ingredientHint(ingredients),
+      ]
+    : [
+        ...FEATURE_TEMPLATES[trackId].map((f, i) =>
+          i === 0 ? `${f} for "${dishName}"` : f
+        ),
+        ingredientHint(ingredients),
+      ];
   if (spice) features.push(`Wild spice rule: ${spice.constraint}`);
 
-  const demoScript = `"${dishName}" — ${pitch.slice(0, 80)}${pitch.length > 80 ? "…" : ""}. [Live demo: one interaction]. Built in 2.5 hours with Cursor at Cook Day.`;
+  const demoScript = toolName
+    ? `"${toolName}" — ${pitch.slice(0, 60)}${pitch.length > 60 ? "…" : ""}. [Live demo the tool]. Built with Cursor at Cook Day.`
+    : `"${dishName}" — ${pitch.slice(0, 80)}${pitch.length > 80 ? "…" : ""}. [Live demo: one interaction]. Built in 2.5 hours with Cursor at Cook Day.`;
 
   return {
     action: "simmer",
@@ -132,11 +143,16 @@ export function buildSimmerPrompt(
   pitch: string,
   trackId: TrackId,
   ingredients: CookIngredient[],
-  spice?: CookSpice | null
+  spice?: CookSpice | null,
+  toolName?: string,
+  toolBrief?: string
 ): string {
   const track = getTrackById(trackId);
   const ing = ingredients.map((i) => i.name).join(", ") || "none";
   const spiceLine = spice ? `Wild spice: ${spice.name} — ${spice.constraint}` : "No wild spice";
+  const toolLine = toolName
+    ? `Tool to build: ${toolName}\nImplementation: ${toolBrief ?? "see pitch"}`
+    : "";
 
   return `You are a hackathon chef at "Cook with Cursor" NYC. A builder rolled dice and got this recipe. Respond ONLY with valid JSON, no markdown fences:
 {"features":["...","...","..."],"files":["...","...","..."],"demoScript":"one sentence","chefNote":"one witty sentence"}
@@ -144,6 +160,7 @@ export function buildSimmerPrompt(
 Dish: ${dishName}
 Pitch: ${pitch}
 Course/Track: ${track.name}
+${toolLine}
 Ingredients: ${ing}
 ${spiceLine}
 

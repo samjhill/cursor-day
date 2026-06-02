@@ -8,7 +8,9 @@ function clientMock(body: CookRequest): CookResponse {
       body.pitch ?? "",
       body.trackId,
       body.ingredients ?? [],
-      body.spice
+      body.spice,
+      body.toolName,
+      body.toolBrief
     );
   }
   return mockPlate(

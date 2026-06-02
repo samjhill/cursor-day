@@ -1,5 +1,6 @@
 import type { Track } from "./tracks";
 import type { Spice } from "./spices";
+import type { ToolIdea } from "./tool-ideas";
 
 export interface Ingredient {
   id: string;
@@ -87,11 +88,18 @@ export function buildRecipeFromIngredients(
   selected: Ingredient[],
   track: Track,
   spice?: Spice | null,
-  dishName?: string
+  dishName?: string,
+  tool?: ToolIdea | null
 ): Recipe {
   const fragments = selected.map((i) => `- ${i.promptFragment}`).join("\n");
   const spiceBlock = spice
     ? `\n## Wild Spice (${spice.emoji} ${spice.name})\n- ${spice.constraint}`
+    : "";
+  const toolBlock = tool
+    ? `\n## Build this useful tool (${tool.emoji} ${tool.name})
+- ${tool.description}
+- Demo hook: ${tool.demoHook}
+- Implementation brief: ${tool.buildBrief}`
     : "";
 
   const prompt = `# Cook with Cursor — Build Task
@@ -99,11 +107,11 @@ export function buildRecipeFromIngredients(
 ## Project context
 You are building inside an existing Next.js scaffold called "Prompt Kitchen".
 Track: ${track.name} (${track.emoji})
-${dishName ? `Dish name: ${dishName}` : ""}
+${dishName ? `Project name: ${dishName}` : ""}
 Event: NYC Cook with Cursor Day — 2.5 hour build window.
 
 ## Track starter
-${track.starterPrompt}
+${track.starterPrompt}${toolBlock}
 
 ## Ingredients (requirements)
 ${fragments}${spiceBlock}

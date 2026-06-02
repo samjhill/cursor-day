@@ -5,7 +5,6 @@ import { Dices, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DiceRow } from "@/components/dice";
-import type { Ingredient } from "@/lib/ingredients";
 import type { Spice } from "@/lib/spices";
 import { rollKitchen, type RollResult } from "@/lib/randomizer";
 import type { Track } from "@/lib/tracks";
@@ -21,6 +20,7 @@ export function ChefsDiceStation({ onRollComplete, currentTrack, spice }: Props)
   const [lastRoll, setLastRoll] = useState<RollResult | null>(null);
   const [diceDisplay, setDiceDisplay] = useState({
     track: 1,
+    tool: 1,
     ingredientCount: 4,
     spice: 1,
   });
@@ -30,7 +30,7 @@ export function ChefsDiceStation({ onRollComplete, currentTrack, spice }: Props)
 
     const result = rollKitchen();
     setRolling(true);
-    setDiceDisplay({ track: 1, ingredientCount: 1, spice: 1 });
+    setDiceDisplay({ track: 1, tool: 1, ingredientCount: 1, spice: 1 });
 
     setTimeout(() => {
       setDiceDisplay(result.dice);
@@ -61,7 +61,8 @@ export function ChefsDiceStation({ onRollComplete, currentTrack, spice }: Props)
         </div>
         <h2 className="mb-1 text-xl font-bold">Roll the Dice</h2>
         <p className="mb-6 text-sm text-zinc-400">
-          Three dice, one chaotic recipe. Course · ingredient count · wild spice.
+          Four dice: course · useful tool · ingredients · wild spice. You build
+          what lands.
         </p>
 
         <div className="mb-6 rounded-xl border border-kitchen-border/80 bg-black/30 px-4 py-6">
@@ -83,6 +84,15 @@ export function ChefsDiceStation({ onRollComplete, currentTrack, spice }: Props)
             <p className="text-sm italic text-amber-200/90">
               &ldquo;{lastRoll.chefQuote}&rdquo;
             </p>
+            <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3">
+              <p className="text-xs font-medium uppercase tracking-wider text-emerald-400">
+                Build this
+              </p>
+              <p className="mt-1 font-semibold text-zinc-100">
+                {lastRoll.tool.emoji} {lastRoll.tool.name}
+              </p>
+              <p className="mt-1 text-sm text-zinc-400">{lastRoll.tool.tagline}</p>
+            </div>
             <div className="flex flex-wrap gap-2 text-sm">
               <span className="rounded-full bg-violet-500/20 px-3 py-1 text-violet-200">
                 {lastRoll.track.emoji} {lastRoll.track.name}
@@ -94,9 +104,6 @@ export function ChefsDiceStation({ onRollComplete, currentTrack, spice }: Props)
                 {lastRoll.ingredients.length} ingredients
               </span>
             </div>
-            <p className="text-xs text-kitchen-muted">
-              Dish: <strong className="text-zinc-200">{lastRoll.dishName}</strong>
-            </p>
           </div>
         )}
 

@@ -108,16 +108,17 @@ export function Dice({ value, rolling, label, size = "lg" }: DiceProps) {
 }
 
 interface DiceRowProps {
-  values: { track: number; ingredientCount: number; spice: number };
+  values: { track: number; tool: number; ingredientCount: number; spice: number };
   rolling: boolean;
 }
 
 export function DiceRow({ values, rolling }: DiceRowProps) {
   return (
-    <div className="flex flex-wrap items-end justify-center gap-6 md:gap-10">
-      <Dice value={values.track} rolling={rolling} label="Course" />
-      <Dice value={values.ingredientCount} rolling={rolling} label="Ingredients" />
-      <Dice value={values.spice} rolling={rolling} label="Spice" />
+    <div className="flex flex-wrap items-end justify-center gap-4 md:gap-6">
+      <Dice value={values.track} rolling={rolling} label="Course" size="sm" />
+      <Dice value={values.tool} rolling={rolling} label="Tool" size="sm" />
+      <Dice value={values.ingredientCount} rolling={rolling} label="Ingredients" size="sm" />
+      <Dice value={values.spice} rolling={rolling} label="Spice" size="sm" />
     </div>
   );
 }

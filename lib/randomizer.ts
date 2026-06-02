@@ -1,16 +1,20 @@
 import type { Ingredient } from "./ingredients";
 import { INGREDIENTS } from "./ingredients";
-import { SPICES, type Spice, randomDishName, randomChefQuote } from "./spices";
+import { SPICES, type Spice, randomChefQuote } from "./spices";
+import { pickToolForTrack, type ToolIdea } from "./tool-ideas";
 import { TRACKS, type Track, type TrackId } from "./tracks";
 
 export interface RollResult {
   track: Track;
+  tool: ToolIdea;
   ingredients: Ingredient[];
   spice: Spice;
   dishName: string;
   chefQuote: string;
+  pitch: string;
   dice: {
     track: number;
+    tool: number;
     ingredientCount: number;
     spice: number;
   };
@@ -29,6 +33,9 @@ export function rollKitchen(): RollResult {
   const trackDie = Math.floor(Math.random() * 6) + 1;
   const trackIndex = (trackDie - 1) % TRACKS.length;
   const track = TRACKS[trackIndex];
+
+  const toolDie = Math.floor(Math.random() * 6) + 1;
+  const tool = pickToolForTrack(track.id, toolDie);
 
   const countDie = Math.floor(Math.random() * 6) + 1;
   const ingredientCount = Math.min(Math.max(countDie, 3), INGREDIENTS.length);
@@ -56,14 +63,19 @@ export function rollKitchen(): RollResult {
     }
   }
 
+  const pitch = `${tool.tagline} ${tool.demoHook}`;
+
   return {
     track,
+    tool,
     ingredients: picked,
     spice,
-    dishName: randomDishName(),
+    dishName: tool.name,
     chefQuote: randomChefQuote(),
+    pitch,
     dice: {
       track: trackDie,
+      tool: toolDie,
       ingredientCount: spice.id === "tasting" ? 3 : ingredientCount,
       spice: spiceDie,
     },

@@ -9,6 +9,7 @@ import { useLocalStorage } from "@/lib/hooks";
 import { DEFAULT_INGREDIENTS } from "@/lib/ingredients";
 import { getTrackById, type TrackId } from "@/lib/tracks";
 import type { Spice } from "@/lib/spices";
+import type { ToolIdea } from "@/lib/tool-ideas";
 import type { SimmerResponse } from "@/lib/cook-types";
 import { DEMO_SCRIPT } from "@/lib/demo-script";
 
@@ -21,6 +22,7 @@ export default function PresentPage() {
   const [ingredients] = useLocalStorage("pk-ingredients", DEFAULT_INGREDIENTS);
   const [spice] = useLocalStorage<Spice | null>("pk-spice", null);
   const [trackId] = useLocalStorage<TrackId>("pk-track", "ai-tool");
+  const [tool] = useLocalStorage<ToolIdea | null>("pk-tool", null);
   const [simmer] = useLocalStorage<SimmerResponse | null>("pk-simmer", null);
 
   const track = getTrackById(trackId);
@@ -65,6 +67,7 @@ export default function PresentPage() {
             dishName={projectName}
             ingredients={ingredients}
             spice={spice}
+            tool={tool}
           />
         </div>
 

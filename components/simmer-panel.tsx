@@ -11,6 +11,7 @@ import type { Track, TrackId } from "@/lib/tracks";
 import { recordSimmer } from "@/lib/kitchen-stats";
 import { useLocalStorage } from "@/lib/hooks";
 import { callCook } from "@/lib/cook-client";
+import type { ToolIdea } from "@/lib/tool-ideas";
 
 interface Props {
   dishName: string;
@@ -18,6 +19,7 @@ interface Props {
   track: Track;
   ingredients: Ingredient[];
   spice: Spice | null;
+  tool?: ToolIdea | null;
 }
 
 export function SimmerPanel({
@@ -26,6 +28,7 @@ export function SimmerPanel({
   track,
   ingredients,
   spice,
+  tool,
 }: Props) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useLocalStorage<SimmerResponse | null>(
@@ -43,6 +46,8 @@ export function SimmerPanel({
         dishName,
         pitch,
         trackId: track.id as TrackId,
+        toolBrief: tool?.buildBrief,
+        toolName: tool?.name,
         ingredients: ingredients.map((i) => ({
           id: i.id,
           name: i.name,

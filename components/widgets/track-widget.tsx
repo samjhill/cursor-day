@@ -3,6 +3,7 @@
 import type { Ingredient } from "@/lib/ingredients";
 import type { Spice } from "@/lib/spices";
 import type { TrackId } from "@/lib/tracks";
+import type { ToolIdea } from "@/lib/tool-ideas";
 import { AiPlater } from "./ai-plater";
 import { KitchenDashboard } from "./kitchen-dashboard";
 import { BuildSprint } from "./build-sprint";
@@ -12,6 +13,7 @@ interface Props {
   dishName: string;
   ingredients: Ingredient[];
   spice: Spice | null;
+  tool?: ToolIdea | null;
 }
 
 export function TrackWidget({
@@ -19,6 +21,7 @@ export function TrackWidget({
   dishName,
   ingredients,
   spice,
+  tool,
 }: Props) {
   switch (trackId) {
     case "visual-dash":
@@ -39,6 +42,7 @@ export function TrackWidget({
           trackId={trackId}
           ingredients={ingredients}
           spice={spice}
+          toolBrief={tool?.buildBrief}
         />
       );
   }

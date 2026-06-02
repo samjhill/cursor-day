@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, UtensilsCrossed, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -16,15 +16,20 @@ interface Props {
   trackId: TrackId;
   ingredients: Ingredient[];
   spice: Spice | null;
+  toolBrief?: string | null;
 }
 
-export function AiPlater({ dishName, trackId, ingredients, spice }: Props) {
+export function AiPlater({ dishName, trackId, ingredients, spice, toolBrief }: Props) {
   const [input, setInput] = useState(
-    "A tool that turns chaotic hackathon ideas into a 30-second demo script"
+    toolBrief ?? "A tool that turns chaotic hackathon ideas into a 30-second demo script"
   );
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PlateResponse | null>(null);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (toolBrief) setInput(toolBrief);
+  }, [toolBrief]);
 
   const plate = async () => {
     setLoading(true);
@@ -48,6 +53,8 @@ export function AiPlater({ dishName, trackId, ingredients, spice }: Props) {
               constraint: spice.constraint,
             }
           : null,
+        toolName: dishName,
+        toolBrief: toolBrief ?? undefined,
       });
       setResult(data as PlateResponse);
       recordPlate();
